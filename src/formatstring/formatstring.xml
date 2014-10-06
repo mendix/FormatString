@@ -45,7 +45,7 @@
                 <property key="variablename" type="string" required="true">
                     <caption>Variable name</caption>
                     <category>Data source</category>
-                    <description>Identifies the attribute, this name should be used in 'Display string' property.</description>
+                    <description>Identifies the attribute value, this name should be used in 'Display string' property.</description>
                 </property>
 				<property key="attrs" type="attribute" isPath="optional" pathType="reference">
 					<caption>Attribute</caption>
@@ -62,24 +62,25 @@
 						<attributeType name="Currency"/>
 					</attributeTypes>
 				</property>
-				<property key="datetimeago" type="boolean" defaultValue="false">
-					<caption>Format date as 'time ago'</caption>
+				<property key="emptyReplacement" type="string" defaultValue="" required="false">
+					<caption>Empty value replacement</caption>
 					<category>Data source</category>
-					<description>Use this you want to show the difference between the date attribute and the current time.</description>
+					<description>This string will be used when an attribute returns empty. Note that this string is interpreted as HTML.</description>
 				</property>
-				<property key="dateformat" type="string" required="false">
+				<property key="datetimeformat" type="enumeration" defaultValue="datetime" >
 					<caption>Date format</caption>
-					<category>Data source</category>
-					<description>Applicable when attribute datatype is DateTime. Example: MM/dd/yyyy</description>
-				</property>
-				<property key="timeformat" type="string" required="false">
-					<caption>Time format</caption>
-					<category>Data source</category>
-					<description>Applicable when attribute is a DateTime. Example hh:mm</description>
+					<category>Behaviour</category>
+					<description>Shows date and/or time according to locale of user. Relative is time relative to current datetime. (E.g. 3 hours from now) </description>
+					<enumerationValues>
+						<enumerationValue key="datetime">Date and time </enumerationValue>
+						<enumerationValue key="date">Date</enumerationValue>
+						<enumerationValue key="time">Time</enumerationValue>
+						<enumerationValue key="relative">Relative</enumerationValue>
+					</enumerationValues>
 				</property>
 				<property key="renderHTML" type="boolean" defaultValue="false">
 					<caption>Value is HTML</caption>
-					<category>Data source</category>
+					<category>Behaviour</category>
 					<description>Attribute value will be rendered as HTML.</description>
 				</property>
             </properties>
@@ -98,12 +99,8 @@
 		<property key="displaystr" type="string" defaultValue="${0}" multiline="true">
 			<caption>Display string</caption>
 			<category>Behavior</category>
-			<description>Use ${[your_Variable_Name]} to have the attribute value inserted in this string. Note that this string, except for the replacements, is intepreted as HTML. </description>
+			<description>Use ${[your_Variable_Name]} to have the attribute value inserted in this string. Note that this string, except for the replacements, is interpreted as HTML. </description>
 		</property>
-		<property key="emptystr" type="string" defaultValue="" required="false">
-			<caption>Empty string</caption>
-			<category>Behavior</category>
-			<description>This string will be used when an attribute returns empty. Note that this string is interpreted as HTML.</description>
-		</property>
+		
 	</properties>
 </widget>

@@ -51,8 +51,8 @@ dojo.declare('formatstring.widget.formatstring', mxui.widget._WidgetBase, {
         for (var i = 0; i  < this.attributeList.length; i++) {
             var value = null;
             if(this._mxobj.get(this.attributeList[i].attrs) !== null) {
-                value = this.fetchAttr(this._mxobj, this.attributeList[i].attrs, this.attributeList[i].renderHTML, i);
-                this.replaceattributes.push({ id: i, variable: this.attributeList[i].variablename, value: value});
+                value = this.fetchAttr(this._mxobj, this.attributeList[i].attrs, this.attributeList[i].renderHTML, i, this.attributeList[i].emptyReplacement);
+                this.replaceattributes.push({ id: i, variable: this.attributeList[i].variablename, value: value, emptyReplacement : this.attributeList[i].emptyReplacement});
             } else {
                 //we'll jump through some hoops with this.
                 referenceAttributeList.push(this.attributeList[i]);
@@ -77,13 +77,14 @@ dojo.declare('formatstring.widget.formatstring', mxui.widget._WidgetBase, {
             var split = list[i].attrs.split('/');
             var guid = this._mxobj.getReference(split[0]);
             var htmlBool = list[i].renderHTML;
+            var emptyReplacement = list[i].emptyReplacement;
             var oldnumber = numberlist[i];
             if(guid !== ''){
                 mx.data.get({
                     guid : guid,
                     callback : dojo.hitch(this, function(data, obj) {
                         value = self.fetchAttr(obj, data.split[2], data.htmlBool, data.oldnumber);
-                        self.replaceattributes.push({ id: data.i, variable: data.listObj.variablename, value: value});
+                        self.replaceattributes.push({ id: data.i, variable: data.listObj.variablename, value: value, emptyReplacement : emptyReplacement });
                         self.buildString();
                     }, { i: i, listObj: listObj, split: split, htmlBool: htmlBool, oldnumber: oldnumber } )
                 });
@@ -96,31 +97,32 @@ dojo.declare('formatstring.widget.formatstring', mxui.widget._WidgetBase, {
         }
     },
 
-    // Fetch attributes.
-    fetchAttr : function(obj, attr, htmlBool, i) {
-        if(obj.isDate(attr)){
-            if (this.attributeList[i].datetimeago) {
-                var timeago = this.parseTimeAgo(obj.get(attr));
-                return timeago;
-            } else {
-                var format = {};
-                format.dateformat = this.attributeList[i].dateformat;
-                format.timeformat = this.attributeList[i].timeformat;
-                var date = this.parseDate(format, obj.get(attr));
-                return date;
-            }
-        } else if (obj.isEnum(attr)){
-            var caption = obj.getEnumCaption(attr, obj.get(attr));
-            caption = this.checkString(caption, htmlBool);
-            return caption;
-        } else {
-            var value = mx.parser.formatAttribute(obj, attr, {places : this.decimalPrecision});
+    fetchAttr : function(obj, attr, htmlBool, i, emptyReplacement) {
+       var returnvalue = "";
 
-            if (obj.getAttributeType(attr) == "String") value = this.checkString(value, htmlBool);
+        if(obj.isDate(attr))
+        {
+            returnvalue = this.parseDate(this.attributeList[i].datetimeformat, obj.get(attr));
+        } 
+        else if (obj.isEnum(attr))
+        {
+            returnvalue = this.checkString(obj.getEnumCaption(attr, obj.get(attr)), htmlBool);
 
-            return value;
         }
+        else
+        {
+            returnvalue = mx.parser.formatAttribute(obj, attr, {places : this.decimalPrecision});
+
+            if (obj.getAttributeType(attr) == "String") 
+                returnvalue = this.checkString(returnvalue, htmlBool);   
+           
+        }
+        if(returnvalue == '')
+            return emptyReplacement;
+        else
+            return returnvalue;
     },
+
 
     // buildstring also does renderstring because of callback from fetchReferences is async.
     buildString : function(message){
@@ -149,18 +151,17 @@ dojo.declare('formatstring.widget.formatstring', mxui.widget._WidgetBase, {
 
     parseDate : function(format, value) {
         var datevalue = value;
-        if ((format.dateformat !== '' || format.timeformat !== '') && value !== '') {
-            var selector = 'date';
-            if (format.dateformat !== '' && format.timeformat !== '')
-                selector = 'datetime';
-            else if (format.timeformat !== '')
-                selector = 'time';
-            
+        
+        if(value=="")
+            return value;
+        
+        if(format == 'relative')
+            return this.parseTimeAgo(value);
+        else
+        {
             datevalue = dojo.date.locale.format(new Date(value), {
-                selector : selector,
-                datePattern : format.dateformat,
-                timePattern : format.timeformat
-            });
+                selector : format
+                });
         }
         return datevalue;
     },
