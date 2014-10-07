@@ -47,13 +47,13 @@
                     <category>Data source</category>
                     <description>Identifies the attribute value, this name should be used in 'Display string' property.</description>
                 </property>
-				<property key="attrs" type="attribute" isPath="optional" pathType="reference">
+				<property key="attrs" type="attribute" allowNonPersistableEntities="true" isPath="optional" pathType="reference">
 					<caption>Attribute</caption>
 					<category>Data source</category>
 					<description>Value of this attribute will be used to replace ${your_Variable_Name}, defined in 'Display string' property</description>
 					<attributeTypes>
 						<attributeType name="AutoNumber"/>
-						<attributeType name="String"/>
+						<attributeType name="String" />
 						<attributeType name="Enum"/>
 						<attributeType name="Integer"/>
 						<attributeType name="Float"/>
@@ -79,28 +79,32 @@
 					</enumerationValues>
 				</property>
 				<property key="renderHTML" type="boolean" defaultValue="false">
-					<caption>Value is HTML</caption>
+					<caption>Render value as HTML</caption>
 					<category>Behaviour</category>
-					<description>Attribute value will be rendered as HTML.</description>
+					<description>Escapes string value when set to false</description>
+				</property>
+				<property key="decimalPrecision" type="integer" defaultValue="2">
+					<caption>Decimal precision</caption>
+					<category>Behaviour</category>
+					<description>Amount of decimals</description>
+				</property>
+				<property key="groupDigits" type="boolean" defaultValue="true">
+					<caption>Group digits</caption>
+					<category>Behaviour</category>
+					<description>Displays a numeric value with group digits</description>
 				</property>
             </properties>
         </property>
-        <property key="decimalPrecision" type="integer" defaultValue="2">
-			<caption>Decimal precision</caption>
-			<category>Data source</category>
-			<description>Amount of decimals to be shown in case of float/currency datatype</description>
-		</property>
 		<property key="onclickmf" type="microflow" required="false">
             <caption>On click</caption>
             <category>Behavior</category>
             <description>Microflow to be invoked on click.</description>
             <returnType type="Void"/>
         </property>
-		<property key="displaystr" type="string" defaultValue="${0}" multiline="true">
+		<property key="displaystr" type="translatableString" multiline="true">
 			<caption>Display string</caption>
 			<category>Behavior</category>
 			<description>Use ${[your_Variable_Name]} to have the attribute value inserted in this string. Note that this string, except for the replacements, is interpreted as HTML. </description>
 		</property>
-		
 	</properties>
 </widget>

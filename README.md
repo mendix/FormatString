@@ -25,7 +25,8 @@ Import the widget to your project and add the Format String to a dataview on a p
 * *On click* - A microflow that is to be executed on click.
 * *Display string* - The template string that should be displayed. 
 * *Empty value replacement* - This string is used for the replace whenever the attribute is found empty.
-* *Attributes* - The list of attributes that are used.
+* *Attributes* - The list of attributes and their indentiefiers to be used in the *Display string* property of this widget.
 * *Datetime format* - Renders datetime attribute as date and/or time. Relative will render the date relative to current datetime.
-* *Decimal Precision* - The number of decimals that should be considered for view.
+* *Decimal Precision* - The number of decimals to display.
+* *Group Digits* - Displays separator character in case of a number datatype
 

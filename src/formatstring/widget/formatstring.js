@@ -51,8 +51,9 @@ dojo.declare('formatstring.widget.formatstring', mxui.widget._WidgetBase, {
         for (var i = 0; i  < this.attributeList.length; i++) {
             var value = null;
             if(this._mxobj.get(this.attributeList[i].attrs) !== null) {
-                value = this.fetchAttr(this._mxobj, this.attributeList[i].attrs, this.attributeList[i].renderHTML, i, this.attributeList[i].emptyReplacement);
-                this.replaceattributes.push({ id: i, variable: this.attributeList[i].variablename, value: value, emptyReplacement : this.attributeList[i].emptyReplacement});
+                value = this.fetchAttr(this._mxobj, this.attributeList[i].attrs, this.attributeList[i].renderHTML, i, 
+                    this.attributeList[i].emptyReplacement, this.attributeList[i].decimalPrecision, this.attributeList[i].groupDigits);
+                this.replaceattributes.push({ id: i, variable: this.attributeList[i].variablename, value: value});
             } else {
                 //we'll jump through some hoops with this.
                 referenceAttributeList.push(this.attributeList[i]);
@@ -78,13 +79,15 @@ dojo.declare('formatstring.widget.formatstring', mxui.widget._WidgetBase, {
             var guid = this._mxobj.getReference(split[0]);
             var htmlBool = list[i].renderHTML;
             var emptyReplacement = list[i].emptyReplacement;
+            var decimalPrecision = list[i].decimalPrecision;
+            var groupDigits = list[i].groupDigits;
             var oldnumber = numberlist[i];
             if(guid !== ''){
                 mx.data.get({
                     guid : guid,
                     callback : dojo.hitch(this, function(data, obj) {
-                        value = self.fetchAttr(obj, data.split[2], data.htmlBool, data.oldnumber);
-                        self.replaceattributes.push({ id: data.i, variable: data.listObj.variablename, value: value, emptyReplacement : emptyReplacement });
+                        value = self.fetchAttr(obj, data.split[2], data.htmlBool, data.oldnumber, emptyReplacement, decimalPrecision, groupDigits );
+                        self.replaceattributes.push({ id: data.i, variable: data.listObj.variablename, value: value });
                         self.buildString();
                     }, { i: i, listObj: listObj, split: split, htmlBool: htmlBool, oldnumber: oldnumber } )
                 });
@@ -97,7 +100,7 @@ dojo.declare('formatstring.widget.formatstring', mxui.widget._WidgetBase, {
         }
     },
 
-    fetchAttr : function(obj, attr, htmlBool, i, emptyReplacement) {
+    fetchAttr : function(obj, attr, htmlBool, i, emptyReplacement, decimalPrecision, groupDigits) {
        var returnvalue = "";
 
         if(obj.isDate(attr))
@@ -109,13 +112,22 @@ dojo.declare('formatstring.widget.formatstring', mxui.widget._WidgetBase, {
             returnvalue = this.checkString(obj.getEnumCaption(attr, obj.get(attr)), htmlBool);
 
         }
+        else if (obj.isNumber(attr) || obj.isCurrency(attr))
+        {
+            var numberOptions = {};
+            numberOptions.places = decimalPrecision;
+            if (groupDigits)
+            {
+                numberOptions.locale = dojo.locale;
+                numberOptions.groups = true;
+            }
+
+            returnvalue = mx.parser.formatValue(obj.get(attr), obj.getAttributeType(attr), numberOptions);
+        }
         else
         {
-            returnvalue = mx.parser.formatAttribute(obj, attr, {places : this.decimalPrecision});
-
             if (obj.getAttributeType(attr) == "String") 
-                returnvalue = this.checkString(returnvalue, htmlBool);   
-           
+                returnvalue = this.checkString(mx.parser.formatAttribute(obj,attr), htmlBool);   
         }
         if(returnvalue == '')
             return emptyReplacement;
@@ -154,7 +166,7 @@ dojo.declare('formatstring.widget.formatstring', mxui.widget._WidgetBase, {
         
         if(value=="")
             return value;
-        
+
         if(format == 'relative')
             return this.parseTimeAgo(value);
         else
