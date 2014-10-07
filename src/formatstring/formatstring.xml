@@ -62,7 +62,7 @@
 						<attributeType name="Currency"/>
 					</attributeTypes>
 				</property>
-				<property key="emptyReplacement" type="string" defaultValue="" required="false">
+				<property key="emptyReplacement" type="translatableString" required="false">
 					<caption>Empty value replacement</caption>
 					<category>Data source</category>
 					<description>This string will be used when an attribute returns empty. Note that this string is interpreted as HTML.</description>
