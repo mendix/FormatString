@@ -142,10 +142,10 @@ dojo.declare('formatstring.widget.formatstring', mxui.widget._WidgetBase, {
 
         for (attr in this.replaceattributes) {
             var settings = this.replaceattributes[attr];
-            this.displaystr = this.displaystr.split('\${' + settings.variable + '}').join(settings.value);
+            str = str.split('\${' + settings.variable + '}').join(settings.value);
         }
 
-        this.renderString(this.displaystr);
+        this.renderString(str);
     },
 
     renderString : function(msg) {
