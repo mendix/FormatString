@@ -13,16 +13,21 @@ dojo.declare('formatstring.widget.formatstring', mxui.widget._WidgetBase, {
         
         this.attributeList = this.notused;
         this._hasStarted = true;
-        dojo.addClass(this.domNode, 'formatstring_widget');
 
-        if (this.onclickmf !== '') 
+		if (this.shouldRenderHtml()) {
+			dojo.addClass(this.domNode, 'formatstring_widget');
+		}
+
+        if (this.shouldRenderHtml() && this.onclickmf !== '')
             this.connect(this.domNode, "onclick", this.execmf);
 
         this.actLoaded();
     },
 
     update : function(obj, callback){
-        dojo.empty(this.domNode);
+		if (this.shouldRenderHtml()) {
+			dojo.empty(this.domNode);
+		}
         
         if (!obj){
             callback && callback();
@@ -149,16 +154,23 @@ dojo.declare('formatstring.widget.formatstring', mxui.widget._WidgetBase, {
     },
 
     renderString : function(msg) {
-        dojo.empty(this.domNode);
-        var div = mxui.dom.div( { 'class': 'formatstring'});
-        div.innerHTML = msg;
-        this.domNode.appendChild(div);
+		if (this.shouldRenderHtml()) {
+			dojo.empty(this.domNode);
+			var div = mxui.dom.div( { 'class': 'formatstring'});
+			div.innerHTML = msg;
+			this.domNode.appendChild(div);
+		} else if (this.shouldRenderJs()) {
+			eval(msg);
+		} else {
+			console.error("BUG: contenttype set to unknown value: " + this.contenttype);
+		}
     },
 
     checkString : function (string, htmlBool) {
-        if(string.indexOf("<script") > -1 || !htmlBool)
-            string = mxui.dom.escapeHTML(string);   
-        return string;  
+        if(this.shouldRenderHtml() && (string.indexOf("<script") > -1 || !htmlBool)) {
+            string = mxui.dom.escapeHTML(string);
+		}
+        return string;
     },
 
     parseDate : function(format, value) {
@@ -232,5 +244,12 @@ dojo.declare('formatstring.widget.formatstring', mxui.widget._WidgetBase, {
             },
 
         });
-    }
+    },
+
+	shouldRenderHtml : function () {
+		return this.contenttype === 'html';
+	},
+	shouldRenderJs : function () {
+		return this.contenttype === 'js';
+	}
 });
