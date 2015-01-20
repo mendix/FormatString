@@ -1,4 +1,5 @@
 /*global mx, mxui, mendix, dojo, require, console, define, module */
+/*mendix */
 
 (function() {
 	'use strict';
