@@ -27,6 +27,7 @@ Import the widget to your project and add the Format String to a dataview on a p
 * *Empty value replacement* - This string is used for the replace whenever the attribute is found empty.
 * *Attributes* - The list of attributes and their indentiefiers to be used in the *Display string* property of this widget.
 * *Datetime format* - Renders datetime attribute as date and/or time. Relative will render the date relative to current datetime.
+* *Date pattern* - Overrides the date part with the dojo/data/locale pattern specified. (e.g `MMMM d, 'in the year' yyyy GGGG`)
+* *Time pattern* - Overrides the time part with the dojo/data/locale pattern specified. (e.g `h:m:s.SSS a z`)
 * *Decimal Precision* - The number of decimals to display.
 * *Group Digits* - Displays separator character in case of a number datatype
-
