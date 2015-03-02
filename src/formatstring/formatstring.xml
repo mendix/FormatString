@@ -60,6 +60,7 @@
 						<attributeType name="Long"/>
 						<attributeType name="DateTime"/>
 						<attributeType name="Currency"/>
+						<attributeType name="Decimal"/>
 					</attributeTypes>
 				</property>
 				<property key="emptyReplacement" type="translatableString" required="false">
@@ -77,6 +78,16 @@
 						<enumerationValue key="time">Time</enumerationValue>
 						<enumerationValue key="relative">Relative</enumerationValue>
 					</enumerationValues>
+				</property>
+				<property key="datePattern" type="translatableString" required="false">
+					<caption>Date pattern</caption>
+					<category>Behaviour</category>
+					<description>Optional, date pattern to override date part according to dojo/date/locale</description>
+				</property>
+				<property key="timePattern" type="translatableString" required="false">
+					<caption>Time pattern</caption>
+					<category>Behaviour</category>
+					<description>Optional, time pattern to override time part according to dojo/date/locale</description>
 				</property>
 				<property key="renderHTML" type="boolean" defaultValue="false">
 					<caption>Render value as HTML</caption>

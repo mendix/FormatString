@@ -252,9 +252,17 @@ require([
 
 		_fetchAttr: function (obj, attr, renderAsHTML, i, emptyReplacement, decimalPrecision, groupDigits) {
 			var returnvalue = "";
+			var options = {};
 
 			if (obj.isDate(attr)) {
-				returnvalue = this._parseDate(this.attributeList[i].datetimeformat, obj.get(attr));
+				if(this.attributeList[i].datePattern !== '') {
+					options.datePattern = this.attributeList[i].datePattern;
+				}
+				if(this.attributeList[i].timePattern !== '') {
+					options.timePattern = this.attributeList[i].timePattern;
+				}
+				
+				returnvalue = this._parseDate(this.attributeList[i].datetimeformat, options, obj.get(attr));
 			} else if (obj.isEnum(attr)) {
 				returnvalue = this._checkString(obj.getEnumCaption(attr, obj.get(attr)), renderAsHTML);
 
@@ -324,7 +332,7 @@ require([
 			return string;
 		},
 
-		_parseDate: function (format, value) {
+		_parseDate: function (format, options, value) {
 			var datevalue = value;
 
 			if (value === "")
@@ -333,9 +341,9 @@ require([
 			if (format == 'relative')
 				return this._parseTimeAgo(value);
 			else {
-				datevalue = dojo.date.locale.format(new Date(value), {
-					selector: format
-				});
+				options.selector = format;
+				
+				datevalue = dojo.date.locale.format(new Date(value), options);
 			}
 			return datevalue;
 		},
