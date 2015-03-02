@@ -266,7 +266,7 @@ require([
 			} else if (obj.isEnum(attr)) {
 				returnvalue = this._checkString(obj.getEnumCaption(attr, obj.get(attr)), renderAsHTML);
 
-			} else if (obj.isNumber(attr) || obj.isCurrency(attr)) {
+			} else if (obj.isNumeric(attr) || obj.isCurrency(attr)) {
 				var numberOptions = {};
 				numberOptions.places = decimalPrecision;
 				if (groupDigits) {
