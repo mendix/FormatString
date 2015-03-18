@@ -22,7 +22,7 @@ require([
         _wgtNode: null,
         _contextGuid: null,
         _contextObj: null,
-        _handle: null,
+		_handles: [],
         attributeList: null,
         /**
          * Mendix Widget methods.
@@ -69,11 +69,8 @@ require([
             callback();
         },
 
-        unintialize: function () {
-            //TODO, clean up only events
-            if (this._handle) {
-                mx.data.unsubscribe(this._handle);
-            }
+        uninitialize: function () {
+			// Clean up listeners, helper objects, etc. There is no need to remove listeners added with this.connect / this.subscribe / this.own.
         },
 
 
@@ -355,16 +352,29 @@ require([
         
         _resetSubscriptions: function () {
             // Release handle on previous object, if any.
-            if (this._handle) {
-                this.unsubscribe(this._handle);
-                this._handle = null;
-            }
+           var i = 0;
+			
+			for ( i = 0; i < this._handles.length; i++) {
+				if (this._handles[i]) {
+					this.unsubscribe(this._handles[i]);
+					this._handles[i] = null;
+				}
+			}
 
             if (this._contextObj) {
-                this._handle = this.subscribe({
+                this._handles[0] = this.subscribe({
                     guid: this._contextObj.getGuid(),
                     callback: this._loadData
                 });
+				
+				for (i = 0; i < this.attributeList.length; i++) {
+					this._handles[i+1] = this.subscribe({
+						guid: this._contextObj.getGuid(),
+						attr: this.attributeList[i].attrs,
+						callback: this._loadData
+					});
+					
+				}
             }
         }
     });
