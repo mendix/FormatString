@@ -94,7 +94,7 @@
 					<category>Behaviour</category>
 					<description>Escapes string value when set to false</description>
 				</property>
-				<property key="decimalPrecision" type="integer" defaultValue="2">
+				<property key="decimalPrecision" type="integer" defaultValue="0">
 					<caption>Decimal precision</caption>
 					<category>Behaviour</category>
 					<description>Amount of decimals</description>
@@ -112,15 +112,6 @@
             <description>Microflow to be invoked on click.</description>
             <returnType type="Void"/>
         </property>
-		<property key="contenttype" type="enumeration" required="true" defaultValue="html">
-			<caption>Content Type</caption>
-			<category>Behavior</category>
-			<description>Defines whether this widget provides a piece of HTML or a piece of JavaScript.</description>
-			<enumerationValues>
-				<enumerationValue key="html">HTML</enumerationValue>
-				<enumerationValue key="js">JavaScript</enumerationValue>
-			</enumerationValues>
-		</property>
 		<property key="displaystr" type="translatableString" multiline="true">
 			<caption>Display string</caption>
 			<category>Behavior</category>
