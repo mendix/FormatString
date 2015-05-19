@@ -263,7 +263,7 @@ define('formatstring/widget/formatstring', ['dojo/_base/declare', 'mxui/widget/_
         _parseTimeAgo: function (value, data) {
             var date = new Date(value),
                 now = new Date(),
-                appendStr = (date > now) ? 'from now' : 'ago',
+                appendStr = null,
                 diff = Math.abs(now.getTime() - date.getTime()),
                 seconds = Math.floor(diff / 1000),
                 minutes = Math.floor(seconds / 60),
@@ -274,10 +274,13 @@ define('formatstring/widget/formatstring', ['dojo/_base/declare', 'mxui/widget/_
                 years = Math.floor(months / 12),
                 time = null;
 
+            time = this._timeData[dojo.locale];
+            appendStr = (date > now) ? time.timestampFuture : time.timestampPast;
+
             function createTimeAgoString(nr, unitSingular, unitPlural) {
                 return nr + " " + (nr === 1 ? unitSingular : unitPlural) + " " + appendStr;
             }
-            time = this._timeData[dojo.locale];
+
             if (seconds < 60) {
                 return createTimeAgoString(seconds, time.second, time.seconds);
             } else if (minutes < 60) {

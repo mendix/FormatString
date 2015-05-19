@@ -13,7 +13,9 @@
         "month": "month",
         "months": "months",
         "year": "year",
-        "years": "years"
+        "years": "years",
+        "timestampFuture": "from now",
+        "timestampPast": "ago"
     },
     "nl-nl": {
         "second": "seconde",
@@ -29,6 +31,8 @@
         "month": "maand",
         "months": "maanden",
         "year": "jaar",
-        "years": "jaar"
+        "years": "jaar",
+        "timestampFuture": "vanaf nu",
+        "timestampPast": "geleden"
     }
 }
