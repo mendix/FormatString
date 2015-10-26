@@ -2,21 +2,15 @@
 /*global mx, define, require, browser, devel, console */
 /*mendix */
 
-// Required module list. Remove unnecessary modules, you can always get them back from the boilerplate.
 define('formatstring/widget/formatstring', ['dojo/_base/declare', 'mxui/widget/_WidgetBase', 'dijit/_TemplatedMixin',
     'mxui/dom', 'dojo/dom', 'dojo/dom-class', 'dojo/_base/lang', 'dojo/text', 'dojo/json',
     'dojo/_base/kernel', 'dojo/_base/xhr', 'dojo/text!formatstring/lib/timeLanguagePack.json', 'dojo/text!formatstring/widget/template/formatstring.html'
 ], function (declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, domClass, lang, text, json, dojo, xhr, languagePack, widgetTemplate) {
     'use strict';
 
-    // Declare widget's prototype.
     return declare('formatstring.widget.formatstring', [_WidgetBase, _TemplatedMixin], {
-        // _TemplatedMixin will create our dom node using this HTML template.
         templateString: widgetTemplate,
-        /**
-         * Internal variables.
-         * ======================
-         */
+		
         _wgtNode: null,
         _contextGuid: null,
         _contextObj: null,
@@ -24,30 +18,13 @@ define('formatstring/widget/formatstring', ['dojo/_base/declare', 'mxui/widget/_
         _timeData: null,
         attributeList: null,
 
-        /**
-         * Mendix Widget methods.
-         * ======================
-         */
-
-        constructor: function () {
-            this._timeData = json.parse(languagePack);
-        },
-
-        // DOJO.WidgetBase -> PostCreate is fired after the properties of the widget are set.
         postCreate: function () {
-            // Setup widgets
-            this._setupWidget();
-
-            // Setup events
+			this._timeData = json.parse(languagePack);
+			
             this._setupEvents();
 
             this.attributeList = this.notused;
         },
-
-
-        /**
-         * What to do when data is loaded?
-         */
 
         update: function (obj, callback) {
 
@@ -58,45 +35,22 @@ define('formatstring/widget/formatstring', ['dojo/_base/declare', 'mxui/widget/_
             callback();
         },
 
-        uninitialize: function () {
-            // Clean up listeners, helper objects, etc. There is no need to remove listeners added with this.connect / this.subscribe / this.own.
-        },
-
-
-        /**
-         * Extra setup widget methods.
-         * ======================
-         */
-        _setupWidget: function () {
-
-            // To be able to just alter one variable in the future we set an internal variable with the domNode that this widget uses.
-            this._wgtNode = this.domNode;
-
-            domClass.add(this._wgtNode, 'formatstring_widget');
-
-        },
-
-
-        // Attach events to newly created nodes.
         _setupEvents: function () {
-
             if (this.onclickmf) {
-                this.connect(this._wgtNode, "onclick", this.execmf);
+                this.connect(this.domNode, "onclick", this.execmf);
             }
-
         },
 
-        /**
-         * Interaction widget methods.
-         * ======================
-         */
         _loadData: function () {
             this.replaceattributes = [];
             var referenceAttributeList = [],
                 numberlist = [],
                 i = null,
                 value = null;
-
+			
+			if (!this._contextObj)
+				return;
+			
             for (i = 0; i < this.attributeList.length; i++) {
                 if (this._contextObj.get(this.attributeList[i].attrs) !== null) {
                     value = this._fetchAttr(this._contextObj, this.attributeList[i].attrs, this.attributeList[i].renderHTML, i,
@@ -107,14 +61,13 @@ define('formatstring/widget/formatstring', ['dojo/_base/declare', 'mxui/widget/_
                         value: value
                     });
                 } else {
-                    //we'll jump through some hoops with this.
                     referenceAttributeList.push(this.attributeList[i]);
                     numberlist.push(i);
                 }
             }
 
             if (referenceAttributeList.length > 0) {
-                //if we have reference attributes, we need to fetch them. Asynchronicity FTW
+                //if we have reference attributes, we need to fetch them
                 this._fetchReferences(referenceAttributeList, numberlist);
             } else {
                 this._buildString();
@@ -176,6 +129,10 @@ define('formatstring/widget/formatstring', ['dojo/_base/declare', 'mxui/widget/_
             var returnvalue = "",
                 options = {},
                 numberOptions = null;
+				
+			// Referenced object might be empty, can't fetch an attr on empty
+			if (!obj)
+				return emptyReplacement;
 
             if (obj.isDate(attr)) {
                 if (this.attributeList[i].datePattern !== '') {
@@ -227,12 +184,12 @@ define('formatstring/widget/formatstring', ['dojo/_base/declare', 'mxui/widget/_
         _renderString: function (msg) {
             var div = null;
 
-            dojo.empty(this._wgtNode);
+            dojo.empty(this.domNode);
             div = dom.div({
                 'class': 'formatstring'
             });
             div.innerHTML = msg;
-            this._wgtNode.appendChild(div);
+            this.domNode.appendChild(div);
 
         },
 
