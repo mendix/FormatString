@@ -5,6 +5,7 @@ test/.project
 *.launch
 *.tmp
 *.lock
+*.bak
 .idea/
 
 *DS_Store*
