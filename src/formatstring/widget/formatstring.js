@@ -2,15 +2,26 @@
 /*global mx, define, require, browser, devel, console */
 /*mendix */
 
-define('formatstring/widget/formatstring', ['dojo/_base/declare', 'mxui/widget/_WidgetBase', 'dijit/_TemplatedMixin',
-    'mxui/dom', 'dojo/dom', 'dojo/dom-class', 'dojo/_base/lang', 'dojo/text', 'dojo/json',
-    'dojo/_base/kernel', 'dojo/_base/xhr', 'dojo/text!formatstring/lib/timeLanguagePack.json', 'dojo/text!formatstring/widget/template/formatstring.html'
+define([
+    'dojo/_base/declare',
+    'mxui/widget/_WidgetBase',
+    'dijit/_TemplatedMixin',
+    'mxui/dom',
+    'dojo/dom',
+    'dojo/dom-class',
+    'dojo/_base/lang',
+    'dojo/text',
+    'dojo/json',
+    'dojo/_base/kernel',
+    'dojo/_base/xhr',
+    'dojo/text!formatstring/lib/timeLanguagePack.json',
+    'dojo/text!formatstring/widget/template/formatstring.html'
 ], function (declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, domClass, lang, text, json, dojo, xhr, languagePack, widgetTemplate) {
     'use strict';
 
     return declare('formatstring.widget.formatstring', [_WidgetBase, _TemplatedMixin], {
         templateString: widgetTemplate,
-		
+
         _wgtNode: null,
         _contextGuid: null,
         _contextObj: null,
@@ -19,11 +30,11 @@ define('formatstring/widget/formatstring', ['dojo/_base/declare', 'mxui/widget/_
         attributeList: null,
 
         postCreate: function () {
-			this._timeData = json.parse(languagePack);
-			
-            this._setupEvents();
 
+            this._timeData = json.parse(languagePack);
+            this._setupEvents();
             this.attributeList = this.notused;
+
         },
 
         update: function (obj, callback) {
@@ -47,10 +58,11 @@ define('formatstring/widget/formatstring', ['dojo/_base/declare', 'mxui/widget/_
                 numberlist = [],
                 i = null,
                 value = null;
-			
-			if (!this._contextObj)
-				return;
-			
+
+            if (!this._contextObj) {
+                return;
+            }
+
             for (i = 0; i < this.attributeList.length; i++) {
                 if (this._contextObj.get(this.attributeList[i].attrs) !== null) {
                     value = this._fetchAttr(this._contextObj, this.attributeList[i].attrs, this.attributeList[i].renderHTML, i,
@@ -104,6 +116,9 @@ define('formatstring/widget/formatstring', ['dojo/_base/declare', 'mxui/widget/_
                         listObj: listObj,
                         split: split,
                         renderAsHTML: renderAsHTML,
+                        emptyReplacement: emptyReplacement,
+                        decimalPrecision: decimalPrecision,
+                        groupDigits: groupDigits,
                         oldnumber: oldnumber
                     };
 
@@ -129,10 +144,11 @@ define('formatstring/widget/formatstring', ['dojo/_base/declare', 'mxui/widget/_
             var returnvalue = "",
                 options = {},
                 numberOptions = null;
-				
-			// Referenced object might be empty, can't fetch an attr on empty
-			if (!obj)
-				return emptyReplacement;
+
+             // Referenced object might be empty, can't fetch an attr on empty
+            if (!obj) {
+                return emptyReplacement;
+            }
 
             if (obj.isDate(attr)) {
                 if (this.attributeList[i].datePattern !== '') {
@@ -145,7 +161,7 @@ define('formatstring/widget/formatstring', ['dojo/_base/declare', 'mxui/widget/_
             } else if (obj.isEnum(attr)) {
                 returnvalue = this._checkString(obj.getEnumCaption(attr, obj.get(attr)), renderAsHTML);
 
-            } else if (obj.isNumeric(attr) || obj.isCurrency(attr) || obj.getAttributeType(attr) == 'AutoNumber') {
+            } else if (obj.isNumeric(attr) || obj.isCurrency(attr) || obj.getAttributeType(attr) === 'AutoNumber') {
                 numberOptions = {};
                 numberOptions.places = decimalPrecision;
                 if (groupDigits) {
@@ -195,7 +211,7 @@ define('formatstring/widget/formatstring', ['dojo/_base/declare', 'mxui/widget/_
 
         _checkString: function (string, renderAsHTML) {
             if (string.indexOf("<script") > -1 || !renderAsHTML) {
-                string = dom.escapeHTML(string);
+                string = dom.escapeString(string);
             }
             return string;
         },
@@ -265,13 +281,16 @@ define('formatstring/widget/formatstring', ['dojo/_base/declare', 'mxui/widget/_
 
             if (this.onclickmf) {
                 mx.data.action({
+                    store: {
+                       caller: this.mxform
+                    },
                     params: {
                         actionname: this.onclickmf,
                         applyto: 'selection',
                         guids: [this._contextObj.getGuid()]
                     },
                     callback: function () {
-                        // ok   
+                        // ok
                     },
                     error: function () {
                         // error
