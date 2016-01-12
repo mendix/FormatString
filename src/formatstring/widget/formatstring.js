@@ -29,15 +29,38 @@ define([
         _timeData: null,
         attributeList: null,
 
+        _timeStrings: {},
+
         postCreate: function () {
             // Uncomment next line to start debugging
             //logger.level(logger.DEBUG);
             logger.debug(this.id + ".postCreate");
 
+            this._buildTimeStrings();
             this._timeData = languagePack;
             this._setupEvents();
             this.attributeList = this.notused;
+        },
 
+        _buildTimeStrings: function () {
+            this._timeStrings = {
+                "second": this.translateStringsecond,
+                "seconds": this.translateStringseconds,
+                "minute": this.translateStringminute,
+                "minutes": this.translateStringminutes,
+                "hour": this.translateStringhour,
+                "hours": this.translateStringhours,
+                "day": this.translateStringday,
+                "days": this.translateStringdays,
+                "week": this.translateStringweek,
+                "weeks": this.translateStringweeks,
+                "month": this.translateStringmonth,
+                "months": this.translateStringmonths,
+                "year": this.translateStringyear,
+                "years": this.translateStringyears,
+                "timestampFuture": this.translateStringtimestampFuture,
+                "timestampPast": this.translateStringtimestampPast
+            }
         },
 
         update: function (obj, callback) {
@@ -216,7 +239,6 @@ define([
             });
             div.innerHTML = msg;
             this.domNode.appendChild(div);
-
         },
 
         _checkString: function (string, renderAsHTML) {
@@ -239,7 +261,6 @@ define([
                 return this._parseTimeAgo(value);
             } else {
                 options.selector = format;
-
                 datevalue = dojo.date.locale.format(new Date(value), options);
             }
             return datevalue;
@@ -260,7 +281,12 @@ define([
                 years = Math.floor(months / 12),
                 time = null;
 
-            time = this._timeData[dojo.locale];
+            if (this.useTranslatableStrings) {
+                time = this._timeStrings;
+            } else {
+                time = this._timeData[dojo.locale];
+            }
+
             appendStr = (date > now) ? time.timestampFuture : time.timestampPast;
 
             function createTimeAgoString(nr, unitSingular, unitPlural) {
@@ -284,7 +310,6 @@ define([
             } else {
                 return "a long time " + appendStr;
             }
-
         },
 
         execmf: function () {
@@ -303,13 +328,8 @@ define([
                         applyto: 'selection',
                         guids: [this._contextObj.getGuid()]
                     },
-                    callback: function () {
-                        // ok
-                    },
-                    error: function () {
-                        // error
-                    }
-
+                    callback: function () {},
+                    error: function () {}
                 });
             }
         },
