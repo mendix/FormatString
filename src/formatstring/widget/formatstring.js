@@ -14,7 +14,7 @@ define([
     'dojo/json',
     'dojo/_base/kernel',
     'dojo/_base/xhr',
-    'dojo/text!formatstring/lib/timeLanguagePack.json',
+    'formatstring/lib/timeLanguagePack',
     'dojo/text!formatstring/widget/template/formatstring.html'
 ], function (declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, domClass, lang, text, json, dojo, xhr, languagePack, widgetTemplate) {
     'use strict';
@@ -34,7 +34,7 @@ define([
             //logger.level(logger.DEBUG);
             logger.debug(this.id + ".postCreate");
 
-            this._timeData = json.parse(languagePack);
+            this._timeData = languagePack;
             this._setupEvents();
             this.attributeList = this.notused;
 

@@ -1,12 +1,11 @@
 {
   "name": "formatstring",
-  "version": "5.2.0",
+  "version": "5.3.0",
   "description": "This widget adds a user-defined string to your page, taking object attributes as input parameters.",
   "license": "",
   "author": "",
   "private": true,
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "grunt": "0.4.5",
     "grunt-contrib-clean": "^0.6.0",
@@ -20,7 +19,10 @@
     "semver": "^5.1.0",
     "node-mendix-modeler-path": "https://github.com/JelteMX/node-mendix-modeler-path/archive/v1.0.0.tar.gz"
   },
-  "repository": {"type":"git","url":"http://github.com/mendix/FormatString"},
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/mendix/FormatString"
+  },
   "engines": {
     "node": ">=0.12.0"
   },
