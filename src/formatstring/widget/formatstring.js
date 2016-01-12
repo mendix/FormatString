@@ -30,6 +30,9 @@ define([
         attributeList: null,
 
         postCreate: function () {
+            // Uncomment next line to start debugging
+            //logger.level(logger.DEBUG);
+            logger.debug(this.id + ".postCreate");
 
             this._timeData = json.parse(languagePack);
             this._setupEvents();
@@ -38,7 +41,7 @@ define([
         },
 
         update: function (obj, callback) {
-
+            logger.debug(this.id + ".update");
             this._contextObj = obj;
             this._resetSubscriptions();
             this._loadData();
@@ -47,12 +50,14 @@ define([
         },
 
         _setupEvents: function () {
+            logger.debug(this.id + "._setupEvents");
             if (this.onclickmf) {
                 this.connect(this.domNode, "onclick", this.execmf);
             }
         },
 
         _loadData: function () {
+            logger.debug(this.id + "._loadData");
             this.replaceattributes = [];
             var referenceAttributeList = [],
                 numberlist = [],
@@ -88,11 +93,13 @@ define([
 
         // The fetch referencse is an async action, we use dojo.hitch to create a function that has values of the scope of the for each loop we are in at that moment.
         _fetchReferences: function (list, numberlist) {
+            logger.debug(this.id + "._fetchReferences");
             var i = null,
                 callbackfunction = null;
 
 
             callbackfunction = function (data, obj) {
+                logger.debug(this.id + ".postCreate");
                 var value = this._fetchAttr(obj, data.split[2], data.renderAsHTML, data.oldnumber, data.emptyReplacement, data.decimalPrecision, data.groupDigits);
                 this.replaceattributes.push({
                     id: data.i,
@@ -141,6 +148,7 @@ define([
         },
 
         _fetchAttr: function (obj, attr, renderAsHTML, i, emptyReplacement, decimalPrecision, groupDigits) {
+            logger.debug(this.id + "._fetchAttr");
             var returnvalue = "",
                 options = {},
                 numberOptions = null;
@@ -185,6 +193,7 @@ define([
 
         // _buildString also does _renderString because of callback from fetchReferences is async.
         _buildString: function (message) {
+            logger.debug(this.id + "._buildString");
             var str = this.displaystr,
                 settings = null,
                 attr = null;
@@ -198,6 +207,7 @@ define([
         },
 
         _renderString: function (msg) {
+            logger.debug(this.id + "._renderString");
             var div = null;
 
             dojo.empty(this.domNode);
@@ -210,6 +220,7 @@ define([
         },
 
         _checkString: function (string, renderAsHTML) {
+            logger.debug(this.id + "._checkString");
             if (string.indexOf("<script") > -1 || !renderAsHTML) {
                 string = dom.escapeString(string);
             }
@@ -217,6 +228,7 @@ define([
         },
 
         _parseDate: function (format, options, value) {
+            logger.debug(this.id + "._parseDate");
             var datevalue = value;
 
             if (value === "") {
@@ -234,6 +246,7 @@ define([
         },
 
         _parseTimeAgo: function (value, data) {
+            logger.debug(this.id + "._parseTimeAgo");
             var date = new Date(value),
                 now = new Date(),
                 appendStr = null,
@@ -275,6 +288,7 @@ define([
         },
 
         execmf: function () {
+            logger.debug(this.id + ".execmf");
             if (!this._contextObj) {
                 return;
             }
@@ -301,6 +315,7 @@ define([
         },
 
         _resetSubscriptions: function () {
+            logger.debug(this.id + "._resetSubscriptions");
             // Release handle on previous object, if any.
             var i = 0;
 
