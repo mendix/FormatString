@@ -50,9 +50,9 @@ define([
         },
 
         _setupEvents: function () {
-            logger.debug(this.id + "._setupEvents");
+            logger.debug(this.id + "._setupEvents, add onClick:" + this.onclickmf);
             if (this.onclickmf) {
-                this.connect(this.domNode, "onclick", this.execmf);
+                this.connect(this.domNode, "onclick", lang.hitch(this,this.execmf));
             }
         },
 
