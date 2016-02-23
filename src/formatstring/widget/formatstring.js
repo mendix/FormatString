@@ -3,23 +3,23 @@
 /*mendix */
 
 define([
-    'dojo/_base/declare',
-    'mxui/widget/_WidgetBase',
-    'dijit/_TemplatedMixin',
-    'mxui/dom',
-    'dojo/dom',
-    'dojo/dom-class',
-    'dojo/_base/lang',
-    'dojo/text',
-    'dojo/json',
-    'dojo/_base/kernel',
-    'dojo/_base/xhr',
-    'formatstring/lib/timeLanguagePack',
-    'dojo/text!formatstring/widget/template/formatstring.html'
+    "dojo/_base/declare",
+    "mxui/widget/_WidgetBase",
+    "dijit/_TemplatedMixin",
+    "mxui/dom",
+    "dojo/dom",
+    "dojo/dom-class",
+    "dojo/_base/lang",
+    "dojo/text",
+    "dojo/json",
+    "dojo/_base/kernel",
+    "dojo/_base/xhr",
+    "formatstring/lib/timeLanguagePack",
+    "dojo/text!formatstring/widget/template/formatstring.html"
 ], function (declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, domClass, lang, text, json, dojo, xhr, languagePack, widgetTemplate) {
-    'use strict';
+    "use strict";
 
-    return declare('formatstring.widget.formatstring', [_WidgetBase, _TemplatedMixin], {
+    return declare("formatstring.widget.formatstring", [_WidgetBase, _TemplatedMixin], {
         templateString: widgetTemplate,
 
         _wgtNode: null,
@@ -60,7 +60,7 @@ define([
                 "years": this.translateStringyears,
                 "timestampFuture": this.translateStringtimestampFuture,
                 "timestampPast": this.translateStringtimestampPast
-            }
+            };
         },
 
         update: function (obj, callback) {
@@ -117,12 +117,9 @@ define([
         // The fetch referencse is an async action, we use dojo.hitch to create a function that has values of the scope of the for each loop we are in at that moment.
         _fetchReferences: function (list, numberlist) {
             logger.debug(this.id + "._fetchReferences");
-            var i = null,
-                callbackfunction = null;
 
-
-            callbackfunction = function (data, obj) {
-                logger.debug(this.id + ".postCreate");
+            var callbackfunction = function (data, obj) {
+                logger.debug(this.id + "._fetchReferences get callback");
                 var value = this._fetchAttr(obj, data.split[2], data.renderAsHTML, data.oldnumber, data.emptyReplacement, data.decimalPrecision, data.groupDigits);
                 this.replaceattributes.push({
                     id: data.i,
@@ -132,9 +129,9 @@ define([
                 this._buildString();
             };
 
-            for (i = 0; i < list.length; i++) {
+            for (var i = 0; i < list.length; i++) {
                 var listObj = list[i],
-                    split = list[i].attrs.split('/'),
+                    split = list[i].attrs.split("/"),
                     guid = this._contextObj.getReference(split[0]),
                     renderAsHTML = list[i].renderHTML,
                     emptyReplacement = list[i].emptyReplacement,
@@ -153,7 +150,7 @@ define([
                     };
 
 
-                if (guid !== '') {
+                if (guid !== "") {
                     mx.data.get({
                         guid: guid,
                         callback: lang.hitch(this, callbackfunction, dataparam)
@@ -163,7 +160,7 @@ define([
                     this.replaceattributes.push({
                         id: i,
                         variable: listObj.variablename,
-                        value: ''
+                        value: ""
                     });
                     this._buildString();
                 }
@@ -176,23 +173,23 @@ define([
                 options = {},
                 numberOptions = null;
 
-             // Referenced object might be empty, can't fetch an attr on empty
+             // Referenced object might be empty, can"t fetch an attr on empty
             if (!obj) {
                 return emptyReplacement;
             }
 
             if (obj.isDate(attr)) {
-                if (this.attributeList[i].datePattern !== '') {
+                if (this.attributeList[i].datePattern !== "") {
                     options.datePattern = this.attributeList[i].datePattern;
                 }
-                if (this.attributeList[i].timePattern !== '') {
+                if (this.attributeList[i].timePattern !== "") {
                     options.timePattern = this.attributeList[i].timePattern;
                 }
                 returnvalue = this._parseDate(this.attributeList[i].datetimeformat, options, obj.get(attr));
             } else if (obj.isEnum(attr)) {
                 returnvalue = this._checkString(obj.getEnumCaption(attr, obj.get(attr)), renderAsHTML);
 
-            } else if (obj.isNumeric(attr) || obj.isCurrency(attr) || obj.getAttributeType(attr) === 'AutoNumber') {
+            } else if (obj.isNumeric(attr) || obj.isCurrency(attr) || obj.getAttributeType(attr) === "AutoNumber") {
                 numberOptions = {};
                 numberOptions.places = decimalPrecision;
                 if (groupDigits) {
@@ -206,7 +203,7 @@ define([
                     returnvalue = this._checkString(mx.parser.formatAttribute(obj, attr), renderAsHTML);
                 }
             }
-            if (returnvalue === '') {
+            if (returnvalue === "") {
                 return emptyReplacement;
             } else {
                 return returnvalue;
@@ -223,7 +220,7 @@ define([
 
             for (attr in this.replaceattributes) {
                 settings = this.replaceattributes[attr];
-                str = str.split('${' + settings.variable + '}').join(settings.value);
+                str = str.split("${" + settings.variable + "}").join(settings.value);
             }
 
             this._renderString(str);
@@ -235,7 +232,7 @@ define([
 
             dojo.empty(this.domNode);
             div = dom.div({
-                'class': 'formatstring'
+                "class": "formatstring"
             });
             div.innerHTML = msg;
             this.domNode.appendChild(div);
@@ -257,7 +254,7 @@ define([
                 return value;
             }
 
-            if (format === 'relative') {
+            if (format === "relative") {
                 return this._parseTimeAgo(value);
             } else {
                 options.selector = format;
@@ -325,7 +322,7 @@ define([
                     },
                     params: {
                         actionname: this.onclickmf,
-                        applyto: 'selection',
+                        applyto: "selection",
                         guids: [this._contextObj.getGuid()]
                     },
                     callback: function () {},
@@ -364,4 +361,4 @@ define([
         }
     });
 });
-require(['formatstring/widget/formatstring']);
+require(["formatstring/widget/formatstring"]);
