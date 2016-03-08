@@ -67,9 +67,8 @@ define([
             logger.debug(this.id + ".update");
             this._contextObj = obj;
             this._resetSubscriptions();
-            this._loadData();
 
-            callback();
+            this._loadData(callback);
         },
 
         _setupEvents: function () {
@@ -79,7 +78,7 @@ define([
             }
         },
 
-        _loadData: function () {
+        _loadData: function (callback) {
             logger.debug(this.id + "._loadData");
             this.replaceattributes = [];
             var referenceAttributeList = [],
@@ -88,6 +87,8 @@ define([
                 value = null;
 
             if (!this._contextObj) {
+                logger.debug(this.id + "._loadData empty context");
+                mendix.lang.nullExec(callback);
                 return;
             }
 
@@ -108,15 +109,17 @@ define([
 
             if (referenceAttributeList.length > 0) {
                 //if we have reference attributes, we need to fetch them
-                this._fetchReferences(referenceAttributeList, numberlist);
+                this._fetchReferences(referenceAttributeList, numberlist, callback);
             } else {
-                this._buildString();
+                this._buildString(callback);
             }
         },
 
         // The fetch referencse is an async action, we use dojo.hitch to create a function that has values of the scope of the for each loop we are in at that moment.
-        _fetchReferences: function (list, numberlist) {
+        _fetchReferences: function (list, numberlist, callback) {
             logger.debug(this.id + "._fetchReferences");
+
+            var l = list.length;
 
             var callbackfunction = function (data, obj) {
                 logger.debug(this.id + "._fetchReferences get callback");
@@ -126,7 +129,13 @@ define([
                     variable: data.listObj.variablename,
                     value: value
                 });
-                this._buildString();
+
+                l--;
+                if (l <= 0) {
+                    this._buildString(callback);
+                } else {
+                    this._buildString();
+                }
             };
 
             for (var i = 0; i < list.length; i++) {
@@ -162,7 +171,7 @@ define([
                         variable: listObj.variablename,
                         value: ""
                     });
-                    this._buildString();
+                    this._buildString(callback);
                 }
             }
         },
@@ -212,7 +221,7 @@ define([
 
 
         // _buildString also does _renderString because of callback from fetchReferences is async.
-        _buildString: function (message) {
+        _buildString: function (callback) {
             logger.debug(this.id + "._buildString");
             var str = this.displaystr,
                 settings = null,
@@ -222,11 +231,10 @@ define([
                 settings = this.replaceattributes[attr];
                 str = str.split("${" + settings.variable + "}").join(settings.value);
             }
-
-            this._renderString(str);
+            this._renderString(str, callback);
         },
 
-        _renderString: function (msg) {
+        _renderString: function (msg, callback) {
             logger.debug(this.id + "._renderString");
             var div = null;
 
@@ -236,6 +244,11 @@ define([
             });
             div.innerHTML = msg;
             this.domNode.appendChild(div);
+
+            if (callback && typeof callback === "function") {
+                logger.debug(this.id + "._renderString callback");
+                callback();
+            }
         },
 
         _checkString: function (string, renderAsHTML) {
@@ -361,4 +374,5 @@ define([
         }
     });
 });
+
 require(["formatstring/widget/formatstring"]);
