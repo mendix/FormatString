@@ -123,6 +123,7 @@
             <description>String value for second</description>
             <translations>
                 <translation lang="en_US">second</translation>
+                <translation lang="en_UK">second</translation>
                 <translation lang="nl_NL">seconde</translation>
             </translations>
         </property>
@@ -132,6 +133,7 @@
             <description>String value for seconds</description>
             <translations>
                 <translation lang="en_US">seconds</translation>
+                <translation lang="en_UK">seconds</translation>
                 <translation lang="nl_NL">seconden</translation>
             </translations>
         </property>
@@ -141,6 +143,7 @@
             <description>String value for minute</description>
             <translations>
                 <translation lang="en_US">minute</translation>
+                <translation lang="en_UK">minute</translation>
                 <translation lang="nl_NL">minuut</translation>
             </translations>
         </property>
@@ -150,6 +153,7 @@
             <description>String value for minutes</description>
             <translations>
                 <translation lang="en_US">minutes</translation>
+                <translation lang="en_UK">minutes</translation>
                 <translation lang="nl_NL">minuten</translation>
             </translations>
         </property>
@@ -159,6 +163,7 @@
             <description>String value for hour</description>
             <translations>
                 <translation lang="en_US">hour</translation>
+                <translation lang="en_UK">hour</translation>
                 <translation lang="nl_NL">uur</translation>
             </translations>
         </property>
@@ -168,6 +173,7 @@
             <description>String value for hours</description>
             <translations>
                 <translation lang="en_US">hours</translation>
+                <translation lang="en_UK">hours</translation>
                 <translation lang="nl_NL">uur</translation>
             </translations>
         </property>
@@ -177,6 +183,7 @@
             <description>String value for day</description>
             <translations>
                 <translation lang="en_US">day</translation>
+                <translation lang="en_UK">day</translation>
                 <translation lang="nl_NL">dag</translation>
             </translations>
         </property>
@@ -186,6 +193,7 @@
             <description>String value for days</description>
             <translations>
                 <translation lang="en_US">days</translation>
+                <translation lang="en_UK">days</translation>
                 <translation lang="nl_NL">dagen</translation>
             </translations>
         </property>
@@ -195,6 +203,7 @@
             <description>String value for week</description>
             <translations>
                 <translation lang="en_US">week</translation>
+                <translation lang="en_UK">week</translation>
                 <translation lang="nl_NL">week</translation>
             </translations>
         </property>
@@ -204,6 +213,7 @@
             <description>String value for weeks</description>
             <translations>
                 <translation lang="en_US">weeks</translation>
+                <translation lang="en_UK">weeks</translation>
                 <translation lang="nl_NL">weken</translation>
             </translations>
         </property>
@@ -213,6 +223,7 @@
             <description>String value for month</description>
             <translations>
                 <translation lang="en_US">month</translation>
+                <translation lang="en_UK">month</translation>
                 <translation lang="nl_NL">maand</translation>
             </translations>
         </property>
@@ -222,6 +233,7 @@
             <description>String value for months</description>
             <translations>
                 <translation lang="en_US">months</translation>
+                <translation lang="en_UK">months</translation>
                 <translation lang="nl_NL">maanden</translation>
             </translations>
         </property>
@@ -231,6 +243,7 @@
             <description>String value for year</description>
             <translations>
                 <translation lang="en_US">year</translation>
+                <translation lang="en_UK">year</translation>
                 <translation lang="nl_NL">jaar</translation>
             </translations>
         </property>
@@ -240,6 +253,7 @@
             <description>String value for years</description>
             <translations>
                 <translation lang="en_US">years</translation>
+                <translation lang="en_UK">years</translation>
                 <translation lang="nl_NL">jaar</translation>
             </translations>
         </property>
@@ -249,6 +263,7 @@
             <description>String value for from now</description>
             <translations>
                 <translation lang="en_US">from now</translation>
+                <translation lang="en_UK">from now</translation>
                 <translation lang="nl_NL">vanaf nu</translation>
             </translations>
         </property>
@@ -258,6 +273,7 @@
             <description>String value for ago</description>
             <translations>
                 <translation lang="en_US">ago</translation>
+                <translation lang="en_UK">ago</translation>
                 <translation lang="nl_NL">geleden</translation>
             </translations>
         </property>
