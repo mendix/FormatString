@@ -238,10 +238,9 @@ define([
 
         _renderString: function (msg, classStr, callback) {
             logger.debug(this.id + "._renderString");
-            var div = null;
 
             dojo.empty(this.domNode);
-            div = dom.div({
+            var div = dom.create("div", {
                 "class": "formatstring " + classStr
             });
             div.innerHTML = msg;
