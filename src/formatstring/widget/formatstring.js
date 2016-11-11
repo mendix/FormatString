@@ -224,23 +224,25 @@ define([
         _buildString: function (callback) {
             logger.debug(this.id + "._buildString");
             var str = this.displaystr,
+                classStr = this.classstr,
                 settings = null,
                 attr = null;
 
             for (attr in this.replaceattributes) {
                 settings = this.replaceattributes[attr];
                 str = str.split("${" + settings.variable + "}").join(settings.value);
+                classStr = classStr.split("${" + settings.variable + "}").join(settings.value);
             }
-            this._renderString(str, callback);
+            this._renderString(str, classStr, callback);
         },
 
-        _renderString: function (msg, callback) {
+        _renderString: function (msg, classStr, callback) {
             logger.debug(this.id + "._renderString");
             var div = null;
 
             dojo.empty(this.domNode);
             div = dom.div({
-                "class": "formatstring"
+                "class": "formatstring " + classStr
             });
             div.innerHTML = msg;
             this.domNode.appendChild(div);

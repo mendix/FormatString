@@ -282,5 +282,10 @@
             <category>Behavior</category>
             <description>Use ${[your_Variable_Name]} to have the attribute value inserted in this string. Note that this string, except for the replacements, is interpreted as HTML. </description>
         </property>
+        <property key="classstr" type="translatableString" multiline="false" required="false">
+            <caption>Class string</caption>
+            <category>Behavior</category>
+            <description>Use ${[your_Variable_Name]} to have the attribute value used in the className of the widget. See 'Display string'. If you want to use multiple classes, make sure you separate them with spaces.</description>
+        </property>
     </properties>
 </widget>
