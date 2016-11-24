@@ -42,7 +42,7 @@
             <category>Data source</category>
             <description></description>
             <properties>
-                <property key="variablename" type="string" required="true">
+                <property key="variablename" type="string" required="false" defaultValue="">
                     <caption>Variable name</caption>
                     <category>Data source</category>
                     <description>Identifies the attribute value, this name should be used in 'Display string' property.</description>
@@ -277,7 +277,7 @@
                 <translation lang="nl_NL">geleden</translation>
             </translations>
         </property>
-        <property key="displaystr" type="translatableString" multiline="true">
+        <property key="displaystr" type="translatableString" multiline="true" defaultValue="" required="false">
             <caption>Display string</caption>
             <category>Behavior</category>
             <description>Use ${[your_Variable_Name]} to have the attribute value inserted in this string. Note that this string, except for the replacements, is interpreted as HTML. </description>
