@@ -1,7 +1,3 @@
-/*jslint white:true, nomen: true, plusplus: true */
-/*global mx, define, require, browser, devel, console */
-/*mendix */
-
 define([
     "dojo/_base/declare",
     "mxui/widget/_WidgetBase",
@@ -33,8 +29,6 @@ define([
         _timeStrings: {},
 
         postCreate: function () {
-            // Uncomment next line to start debugging
-            //logger.level(logger.DEBUG);
             logger.debug(this.id + ".postCreate");
 
             this._buildTimeStrings();
@@ -93,7 +87,7 @@ define([
 
             if (!this._contextObj) {
                 logger.debug(this.id + "._loadData empty context");
-                mendix.lang.nullExec(callback);
+                this._executeCallback(callback, "_loadData");
                 return;
             }
 
@@ -228,7 +222,6 @@ define([
             }
         },
 
-
         // _buildString also does _renderString because of callback from fetchReferences is async.
         _buildString: function (callback) {
             logger.debug(this.id + "._buildString");
@@ -255,10 +248,7 @@ define([
             div.innerHTML = msg;
             this.domNode.appendChild(div);
 
-            if (callback && typeof callback === "function") {
-                logger.debug(this.id + "._renderString callback");
-                callback();
-            }
+            this._executeCallback(callback, "_renderString");
         },
 
         _checkString: function (string, renderAsHTML) {
@@ -381,6 +371,13 @@ define([
 
                 }
             }
+        },
+
+        _executeCallback: function (cb, from) {
+          logger.debug(this.id + "._executeCallback" + (from ? " from " + from : ""));
+          if (cb && typeof cb === "function") {
+            cb();
+          }
         }
     });
 });
