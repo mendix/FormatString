@@ -10,13 +10,14 @@ define([
     "dojo/dom",
     "dojo/dom-class",
     "dojo/_base/lang",
+    "dojo/on",
     "dojo/text",
     "dojo/json",
     "dojo/_base/kernel",
     "dojo/_base/xhr",
     "formatstring/lib/timeLanguagePack",
     "dojo/text!formatstring/widget/template/formatstring.html"
-], function (declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, domClass, lang, text, json, dojo, xhr, languagePack, widgetTemplate) {
+], function (declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, domClass, lang, on, text, json, dojo, xhr, languagePack, widgetTemplate) {
     "use strict";
 
     return declare("formatstring.widget.formatstring", [_WidgetBase, _TemplatedMixin], {
@@ -74,7 +75,11 @@ define([
         _setupEvents: function () {
             logger.debug(this.id + "._setupEvents, add onClick:" + this.onclickmf);
             if (this.onclickmf) {
-                this.connect(this.domNode, "onclick", lang.hitch(this,this.execmf));
+                on(this.domNode, "click", lang.hitch(this, function(e) {
+                    this.execmf();
+
+                    e.stopPropagation();
+                }));
             }
         },
 
