@@ -101,11 +101,15 @@ define([
                 if (this._contextObj.get(this.attributeList[i].attrs) !== null) {
                     value = this._fetchAttr(this._contextObj, this.attributeList[i].attrs, this.attributeList[i].renderHTML, i,
                         this.attributeList[i].emptyReplacement, this.attributeList[i].decimalPrecision, this.attributeList[i].groupDigits);
-                    this.replaceattributes.push({
-                        id: i,
-                        variable: this.attributeList[i].variablename,
-                        value: value
-                    });
+                    if (this.attributeList[i].variablename !== "") {
+                      this.replaceattributes.push({
+                          id: i,
+                          variable: this.attributeList[i].variablename,
+                          value: value
+                      });
+                    } else {
+                      logger.warn(this.id + "._loadData: You have an empty variable name, skipping! Please check Data source -> Attributes -> Variable Name");
+                    }
                 } else {
                     referenceAttributeList.push(this.attributeList[i]);
                     numberlist.push(i);
