@@ -86,10 +86,12 @@ define([
                 value = null;
 
             if (!this._contextObj) {
-                logger.debug(this.id + "._loadData empty context");
+                logger.debug(this.id + "._loadData empty context, hiding");
+                domClass.toggle(this.domNode, "hidden", true);
                 this._executeCallback(callback, "_loadData");
                 return;
             }
+            domClass.toggle(this.domNode, "false", true);
 
             for (i = 0; i < this.attributeList.length; i++) {
                 if (this._contextObj.get(this.attributeList[i].attrs) !== null) {

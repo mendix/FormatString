@@ -1,12 +1,11 @@
 {
   "name": "formatstring",
-  "version": "5.5.1",
+  "version": "5.5.2",
   "description": "This widget adds a user-defined string to your page, taking object attributes as input parameters.",
   "license": "",
   "author": "",
   "private": true,
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "del": "^2.2.2",
     "gulp": "^3.9.1",
