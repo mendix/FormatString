@@ -91,7 +91,7 @@ define([
                 this._executeCallback(callback, "_loadData");
                 return;
             }
-            domClass.toggle(this.domNode, "false", true);
+            domClass.toggle(this.domNode, "hidden", false);
 
             for (i = 0; i < this.attributeList.length; i++) {
                 if (this._contextObj.get(this.attributeList[i].attrs) !== null) {
