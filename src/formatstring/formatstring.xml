@@ -112,6 +112,11 @@
             <description>Microflow to be invoked on click.</description>
             <returnType type="Void"/>
         </property>
+        <property key="stopClickPropagation" type="boolean" defaultValue="true">
+            <caption>Stop propagation</caption>
+            <category>Behavior</category>
+            <description>Stop handling click action, prevent click event to go to other components</description>
+        </property>
         <property key="useTranslatableStrings" type="boolean" defaultValue="false" required="true">
             <caption>Translatable strings</caption>
             <category>Behavior</category>
