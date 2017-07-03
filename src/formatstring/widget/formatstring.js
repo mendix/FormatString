@@ -18,12 +18,9 @@ define([
         _replaceAttributes: null,
         attributeList: null,
 
-        _timeStrings: {},
-
         postCreate: function() {
             logger.debug(this.id + ".postCreate");
 
-            this._buildTimeStrings();
             this._timeData = languagePack;
 
             if (this.onclickmf) {
@@ -31,27 +28,6 @@ define([
             }
 
             this.attributeList = this.notused;
-        },
-
-        _buildTimeStrings: function() {
-            this._timeStrings = {
-                "second": this.translateStringsecond,
-                "seconds": this.translateStringseconds,
-                "minute": this.translateStringminute,
-                "minutes": this.translateStringminutes,
-                "hour": this.translateStringhour,
-                "hours": this.translateStringhours,
-                "day": this.translateStringday,
-                "days": this.translateStringdays,
-                "week": this.translateStringweek,
-                "weeks": this.translateStringweeks,
-                "month": this.translateStringmonth,
-                "months": this.translateStringmonths,
-                "year": this.translateStringyear,
-                "years": this.translateStringyears,
-                "timestampFuture": this.translateStringtimestampFuture,
-                "timestampPast": this.translateStringtimestampPast
-            };
         },
 
         update: function(obj, callback) {
@@ -262,7 +238,24 @@ define([
                 time = null;
 
             if (this.useTranslatableStrings) {
-                time = this._timeStrings;
+                time = {
+                    "second": this.translateStringsecond,
+                    "seconds": this.translateStringseconds,
+                    "minute": this.translateStringminute,
+                    "minutes": this.translateStringminutes,
+                    "hour": this.translateStringhour,
+                    "hours": this.translateStringhours,
+                    "day": this.translateStringday,
+                    "days": this.translateStringdays,
+                    "week": this.translateStringweek,
+                    "weeks": this.translateStringweeks,
+                    "month": this.translateStringmonth,
+                    "months": this.translateStringmonths,
+                    "year": this.translateStringyear,
+                    "years": this.translateStringyears,
+                    "timestampFuture": this.translateStringtimestampFuture,
+                    "timestampPast": this.translateStringtimestampPast
+                };
             } else if (typeof this._timeData[this._getLocale()] !== "undefined") {
                 time = this._timeData[this._getLocale()];
             } else {
@@ -271,24 +264,24 @@ define([
 
             appendStr = (date > now) ? time.timestampFuture : time.timestampPast;
 
-            function createTimeAgoString(nr, unitSingular, unitPlural) {
-                return nr + " " + (nr === 1 ? unitSingular : unitPlural) + " " + appendStr;
+            function createTimeAgoString(nr, unit) {
+                return nr + " " + (nr === 1 ? time[unit] : time[unit + "s"]) + " " + appendStr;
             }
 
             if (seconds < 60) {
-                return createTimeAgoString(seconds, time.second, time.seconds);
+                return createTimeAgoString(seconds, "second");
             } else if (minutes < 60) {
-                return createTimeAgoString(minutes, time.minute, time.minutes);
+                return createTimeAgoString(minutes, "minute");
             } else if (hours < 24) {
-                return createTimeAgoString(hours, time.hour, time.hours);
+                return createTimeAgoString(hours, "hour");
             } else if (days < 7) {
-                return createTimeAgoString(days, time.day, time.days);
+                return createTimeAgoString(days, "day");
             } else if (weeks < 5) {
-                return createTimeAgoString(weeks, time.week, time.weeks);
+                return createTimeAgoString(weeks, "week");
             } else if (months < 12) {
-                return createTimeAgoString(months, time.month, time.months);
+                return createTimeAgoString(months, "month");
             } else if (years < 10) {
-                return createTimeAgoString(years, time.year, time.years);
+                return createTimeAgoString(years, "year");
             } else {
                 return "a long time " + appendStr;
             }
@@ -334,13 +327,13 @@ define([
                     callback: this._loadData
                 });
 
-                for (var i = 0; i < this.attributeList.length; i++) {
+                dojoArray.forEach(lang.hitch(this.attributeList, function (attrObj) {
                     this.subscribe({
                         guid: this._contextObj.getGuid(),
-                        attr: this.attributeList[i].attrs,
+                        attr: attrObj.attrs,
                         callback: this._loadData
                     });
-                }
+                }));
             }
         },
 
