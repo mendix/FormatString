@@ -68,7 +68,9 @@ define([
             logger.debug(this.id + "._setupEvents, add onClick:" + this.onclickmf);
             on(this.domNode, "click", lang.hitch(this, function(e) {
                 this.execmf();
-                e.stopPropagation();
+                if (this.stopClickPropagation) {
+                    e.stopPropagation();
+                }
             }));
         },
 
