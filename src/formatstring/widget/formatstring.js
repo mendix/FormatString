@@ -1,30 +1,23 @@
 define([
     "dojo/_base/declare",
     "mxui/widget/_WidgetBase",
-    "dijit/_TemplatedMixin",
     "mxui/dom",
-    "dojo/dom",
-    "dojo/dom-class",
     "dojo/_base/lang",
-    "dojo/on",
-    "dojo/text",
-    "dojo/json",
     "dojo/_base/kernel",
-    "dojo/_base/xhr",
     "dojo/_base/array",
-    "formatstring/lib/timeLanguagePack",
-    "dojo/text!formatstring/widget/template/formatstring.html"
-], function(declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, domClass, lang, on, text, json, dojo, xhr, dojoArray, languagePack, widgetTemplate) {
+    "dojo/dom-class",
+    "dojo/on",
+    "formatstring/lib/timeLanguagePack"
+], function(declare, _WidgetBase, dom, lang, dojo, dojoArray, domClass, on, languagePack) {
     "use strict";
 
-    return declare("formatstring.widget.formatstring", [_WidgetBase, _TemplatedMixin], {
-        templateString: widgetTemplate,
+    return declare("formatstring.widget.formatstring", [_WidgetBase], {
 
         _wgtNode: null,
         _contextGuid: null,
         _contextObj: null,
-        _handles: [],
         _timeData: null,
+        _replaceAttributes: null,
         attributeList: null,
 
         _timeStrings: {},
@@ -34,7 +27,11 @@ define([
 
             this._buildTimeStrings();
             this._timeData = languagePack;
-            this._setupEvents();
+
+            if (this.onclickmf) {
+                this._setupEvents();
+            }
+
             this.attributeList = this.notused;
         },
 
@@ -69,20 +66,15 @@ define([
 
         _setupEvents: function() {
             logger.debug(this.id + "._setupEvents, add onClick:" + this.onclickmf);
-            if (this.onclickmf) {
-                on(this.domNode, "click", lang.hitch(this, function(e) {
-                    this.execmf();
-
-                    e.stopPropagation();
-                }));
-            }
+            on(this.domNode, "click", lang.hitch(this, function(e) {
+                this.execmf();
+                e.stopPropagation();
+            }));
         },
 
         _loadData: function(callback) {
             logger.debug(this.id + "._loadData");
-            this.replaceattributes = [];
-            var referenceAttributeList = [],
-                value = null;
+            this._replaceAttributes = [];
 
             if (!this._contextObj) {
                 logger.debug(this.id + "._loadData empty context, hiding");
@@ -95,16 +87,10 @@ define([
             this.collect(dojoArray.map(this.attributeList, lang.hitch(this, function (attrObj) {
                 if (this._contextObj.get(attrObj.attrs) !== null) {
                     return function (cb) {
-                        value = this._fetchAttr(this._contextObj, attrObj.attrs, {
-                            renderAsHTML: attrObj.renderHTML,
-                            attrObject: attrObj,
-                            emptyReplacement: attrObj.emptyReplacement,
-                            decimalPrecision: attrObj.decimalPrecision,
-                            groupDigits: attrObj.groupDigits
-                        });
+                        var value = this._fetchAttr(this._contextObj, attrObj.attrs, attrObj);
 
                         if (attrObj.variablename !== "") {
-                            this.replaceattributes.push({
+                            this._replaceAttributes.push({
                                 variable: attrObj.variablename,
                                 value: value
                             });
@@ -124,33 +110,23 @@ define([
         _fetchReferencesCBFunc: function(data, cb, obj) {
             logger.debug(this.id + "._fetchReferences get callback");
 
-            var value = this._fetchAttr(obj, data.split[2], {
-                attrObject: data.attrObject,
-                renderAsHTML: data.renderAsHTML,
-                emptyReplacement: data.emptyReplacement,
-                decimalPrecision: data.decimalPrecision,
-                groupDigits: data.groupDigits
-            });
+            var value = this._fetchAttr(obj, data.split[2], data.attrObject);
 
-            this.replaceattributes.push({
+            this._replaceAttributes.push({
                 variable: data.attrObject.variablename,
                 value: value
             });
             cb();
         },
 
-        _fetchReferenceCollector: function(obj) {
+        _fetchReferenceCollector: function(attrObj) {
             return function(cb) {
-                var split = obj.attrs.split("/"),
+                var split = attrObj.attrs.split("/"),
                     guid = this._contextObj.getReference(split[0]);
 
                 var dataparam = {
-                    attrObject: obj,
-                    split: obj.attrs.split("/"),
-                    renderAsHTML: obj.renderAsHTML,
-                    emptyReplacement: obj.emptyReplacement,
-                    decimalPrecision: obj.decimalPrecision,
-                    groupDigits: obj.groupDigits
+                    attrObject: attrObj,
+                    split: split
                 };
 
                 if (guid !== "") {
@@ -160,8 +136,8 @@ define([
                     });
                 } else {
                     //empty reference
-                    this.replaceattributes.push({
-                        variable: obj.variablename,
+                    this._replaceAttributes.push({
+                        variable: attrObj.variablename,
                         value: ""
                     });
                     cb();
@@ -169,61 +145,47 @@ define([
             };
         },
 
-        // The fetch referencse is an async action, we use dojo.hitch to create a function that has values of the scope of the for each loop we are in at that moment.
-        _fetchReferences: function(list, callback) {
-            logger.debug(this.id + "._fetchReferences");
-
-            this.collect(dojoArray.map(list, this._fetchReferenceCollector), function() {
-                this._buildString(callback);
-            });
-        },
-
-        _fetchAttr: function(obj, attr, opts) {
+        _fetchAttr: function(obj, attr, attrObj) {
             logger.debug(this.id + "._fetchAttr");
-            var returnValue = "",
-                options = {};
 
             // Referenced object might be empty, can"t fetch an attr on empty
             if (!obj) {
-                return opts.emptyReplacement;
+                return attrObj.emptyReplacement;
             }
 
-            console.log(obj, attr, opts);
-
             if (obj.isDate(attr)) {
-                if (opts.attrObject.datePattern !== "") {
-                    options.datePattern = opts.attrObject.datePattern;
-                }
-                if (opts.attrObject.timePattern !== "") {
-                    options.timePattern = opts.attrObject.timePattern;
-                }
-                returnValue = this._parseDate(opts.attrObject.datetimeformat, options, obj.get(attr));
+                var options = {
+                    datePattern: attrObj.datePattern !== "" ? attrObj.datePattern : undefined,
+                    timePattern: attrObj.timePattern !== "" ? attrObj.timePattern : undefined
+                };
 
-                return returnValue === "" ? opts.emptyReplacement : returnValue;
+                var returnDate = this._parseDate(attrObj.datetimeformat, options, obj.get(attr));
+
+                return returnDate === "" ? attrObj.emptyReplacement : returnDate;
             }
 
             if (obj.isEnum(attr)) {
-                returnValue = this._checkString(obj.getEnumCaption(attr, obj.get(attr)), opts.renderAsHTML);
-                return returnValue === "" ? opts.emptyReplacement : returnValue;
+                var returnEnum = this._checkString(obj.getEnumCaption(attr, obj.get(attr)), attrObj.renderHTML);
+                return returnEnum === "" ? attrObj.emptyReplacement : returnEnum;
             }
 
             if (obj.isNumeric(attr) || obj.isCurrency(attr) || obj.getAttributeType(attr) === "AutoNumber") {
                 var numberOptions = {};
-                numberOptions.places = opts.decimalPrecision;
-                if (opts.groupDigits) {
+                numberOptions.places = attrObj.decimalPrecision;
+                if (attrObj.groupDigits) {
                     numberOptions.locale = dojo.locale;
                     numberOptions.groups = true;
                 }
 
-                returnValue = mx.parser.formatValue(obj.get(attr), obj.getAttributeType(attr), numberOptions);
-                return returnValue === "" ? opts.emptyReplacement : returnValue;
+                var returnNumber = mx.parser.formatValue(obj.get(attr), obj.getAttributeType(attr), numberOptions);
+                return returnNumber === "" ? attrObj.emptyReplacement : returnNumber;
             }
 
+            var returnValue = "";
             if (obj.getAttributeType(attr) === "String") {
-                returnValue = this._checkString(mx.parser.formatAttribute(obj, attr), opts.renderAsHTML);
+                returnValue = this._checkString(mx.parser.formatAttribute(obj, attr), attrObj.renderHTML);
             }
-
-            return returnValue === "" ? opts.emptyReplacement : returnValue;
+            return returnValue === "" ? attrObj.emptyReplacement : returnValue;
         },
 
         // _buildString also does _renderString because of callback from fetchReferences is async.
@@ -232,7 +194,7 @@ define([
             var str = this.displaystr,
                 classStr = this.classstr;
 
-            dojoArray.forEach(this.replaceattributes, lang.hitch(this, function (attr) {
+            dojoArray.forEach(this._replaceAttributes, lang.hitch(this, function (attr) {
                 str = str.split("${" + attr.variable + "}").join(attr.value);
                 classStr = classStr.split("${" + attr.variable + "}").join(attr.value);
             }));
