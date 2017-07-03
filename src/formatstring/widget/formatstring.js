@@ -13,8 +13,6 @@ define([
 
     return declare("formatstring.widget.formatstring", [_WidgetBase], {
 
-        _wgtNode: null,
-        _contextGuid: null,
         _contextObj: null,
         _timeData: null,
         _replaceAttributes: null,
@@ -72,6 +70,13 @@ define([
                     e.stopPropagation();
                 }
             }));
+        },
+
+        _getLocale: function () {
+            if (this.localeSelection === "automatic") {
+                return dojo.locale;
+            }
+            return this.localeSelection.replace("_", "-");
         },
 
         _loadData: function(callback) {
@@ -175,7 +180,7 @@ define([
                 var numberOptions = {};
                 numberOptions.places = attrObj.decimalPrecision;
                 if (attrObj.groupDigits) {
-                    numberOptions.locale = dojo.locale;
+                    numberOptions.locale = this._getLocale();
                     numberOptions.groups = true;
                 }
 
@@ -258,8 +263,10 @@ define([
 
             if (this.useTranslatableStrings) {
                 time = this._timeStrings;
+            } else if (typeof this._timeData[this._getLocale()] !== "undefined") {
+                time = this._timeData[this._getLocale()];
             } else {
-                time = this._timeData[dojo.locale];
+                time = this._timeData["en-us"];
             }
 
             appendStr = (date > now) ? time.timestampFuture : time.timestampPast;

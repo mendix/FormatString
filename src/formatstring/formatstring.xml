@@ -103,6 +103,16 @@
             <category>Behavior</category>
             <description>Use translatable strings (instead of internal language pack)</description>
         </property>
+        <property key="localeSelection" type="enumeration" defaultValue="automatic">
+            <caption>Locale selection</caption>
+            <category>Behavior</category>
+            <description>When you use the internal language pack, only a few languages are supported. Choose 'automatic' to let Dojo choose based on the application (with a fallback to 'en-us')</description>
+            <enumerationValues>
+              <enumerationValue key="automatic">Automatic</enumerationValue>
+              <enumerationValue key="en_us">en-us</enumerationValue>
+              <enumerationValue key="nl_nl">nl-nl</enumerationValue>
+            </enumerationValues>
+        </property>
         <!-- CUSTOMIZATION -->
         <property key="translateStringsecond" type="translatableString">
             <caption>String value for second</caption>
