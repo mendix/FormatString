@@ -11,9 +11,10 @@ define([
     "dojo/json",
     "dojo/_base/kernel",
     "dojo/_base/xhr",
+    "dojo/_base/array",
     "formatstring/lib/timeLanguagePack",
     "dojo/text!formatstring/widget/template/formatstring.html"
-], function (declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, domClass, lang, on, text, json, dojo, xhr, languagePack, widgetTemplate) {
+], function(declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, domClass, lang, on, text, json, dojo, xhr, dojoArray, languagePack, widgetTemplate) {
     "use strict";
 
     return declare("formatstring.widget.formatstring", [_WidgetBase, _TemplatedMixin], {
@@ -28,7 +29,7 @@ define([
 
         _timeStrings: {},
 
-        postCreate: function () {
+        postCreate: function() {
             logger.debug(this.id + ".postCreate");
 
             this._buildTimeStrings();
@@ -37,7 +38,7 @@ define([
             this.attributeList = this.notused;
         },
 
-        _buildTimeStrings: function () {
+        _buildTimeStrings: function() {
             this._timeStrings = {
                 "second": this.translateStringsecond,
                 "seconds": this.translateStringseconds,
@@ -58,7 +59,7 @@ define([
             };
         },
 
-        update: function (obj, callback) {
+        update: function(obj, callback) {
             logger.debug(this.id + ".update");
             this._contextObj = obj;
             this._resetSubscriptions();
@@ -66,7 +67,7 @@ define([
             this._loadData(callback);
         },
 
-        _setupEvents: function () {
+        _setupEvents: function() {
             logger.debug(this.id + "._setupEvents, add onClick:" + this.onclickmf);
             if (this.onclickmf) {
                 on(this.domNode, "click", lang.hitch(this, function(e) {
@@ -77,12 +78,10 @@ define([
             }
         },
 
-        _loadData: function (callback) {
+        _loadData: function(callback) {
             logger.debug(this.id + "._loadData");
             this.replaceattributes = [];
             var referenceAttributeList = [],
-                numberlist = [],
-                i = null,
                 value = null;
 
             if (!this._contextObj) {
@@ -93,154 +92,154 @@ define([
             }
             domClass.toggle(this.domNode, "hidden", false);
 
-            for (i = 0; i < this.attributeList.length; i++) {
-                if (this._contextObj.get(this.attributeList[i].attrs) !== null) {
-                    value = this._fetchAttr(this._contextObj, this.attributeList[i].attrs, this.attributeList[i].renderHTML, i,
-                        this.attributeList[i].emptyReplacement, this.attributeList[i].decimalPrecision, this.attributeList[i].groupDigits);
-                    if (this.attributeList[i].variablename !== "") {
-                      this.replaceattributes.push({
-                          id: i,
-                          variable: this.attributeList[i].variablename,
-                          value: value
-                      });
-                    } else {
-                      logger.warn(this.id + "._loadData: You have an empty variable name, skipping! Please check Data source -> Attributes -> Variable Name");
-                    }
-                } else {
-                    referenceAttributeList.push(this.attributeList[i]);
-                    numberlist.push(i);
-                }
-            }
+            this.collect(dojoArray.map(this.attributeList, lang.hitch(this, function (attrObj) {
+                if (this._contextObj.get(attrObj.attrs) !== null) {
+                    return function (cb) {
+                        value = this._fetchAttr(this._contextObj, attrObj.attrs, {
+                            renderAsHTML: attrObj.renderHTML,
+                            attrObject: attrObj,
+                            emptyReplacement: attrObj.emptyReplacement,
+                            decimalPrecision: attrObj.decimalPrecision,
+                            groupDigits: attrObj.groupDigits
+                        });
 
-            if (referenceAttributeList.length > 0) {
-                //if we have reference attributes, we need to fetch them
-                this._fetchReferences(referenceAttributeList, numberlist, callback);
-            } else {
+                        if (attrObj.variablename !== "") {
+                            this.replaceattributes.push({
+                                variable: attrObj.variablename,
+                                value: value
+                            });
+                        } else {
+                            logger.warn(this.id + "._loadData: You have an empty variable name, skipping! Please check Data source -> Attributes -> Variable Name");
+                        }
+                        cb();
+                    };
+                } else {
+                    return this._fetchReferenceCollector(attrObj);
+                }
+            })), function () {
                 this._buildString(callback);
-            }
+            });
         },
 
-        // The fetch referencse is an async action, we use dojo.hitch to create a function that has values of the scope of the for each loop we are in at that moment.
-        _fetchReferences: function (list, numberlist, callback) {
-            logger.debug(this.id + "._fetchReferences");
+        _fetchReferencesCBFunc: function(data, cb, obj) {
+            logger.debug(this.id + "._fetchReferences get callback");
 
-            var l = list.length;
+            var value = this._fetchAttr(obj, data.split[2], {
+                attrObject: data.attrObject,
+                renderAsHTML: data.renderAsHTML,
+                emptyReplacement: data.emptyReplacement,
+                decimalPrecision: data.decimalPrecision,
+                groupDigits: data.groupDigits
+            });
 
-            var callbackfunction = function (data, obj) {
-                logger.debug(this.id + "._fetchReferences get callback");
-                var value = this._fetchAttr(obj, data.split[2], data.renderAsHTML, data.oldnumber, data.emptyReplacement, data.decimalPrecision, data.groupDigits);
-                this.replaceattributes.push({
-                    id: data.i,
-                    variable: data.listObj.variablename,
-                    value: value
-                });
+            this.replaceattributes.push({
+                variable: data.attrObject.variablename,
+                value: value
+            });
+            cb();
+        },
 
-                l--;
-                if (l <= 0) {
-                    this._buildString(callback);
-                } else {
-                    this._buildString();
-                }
-            };
+        _fetchReferenceCollector: function(obj) {
+            return function(cb) {
+                var split = obj.attrs.split("/"),
+                    guid = this._contextObj.getReference(split[0]);
 
-            for (var i = 0; i < list.length; i++) {
-                var listObj = list[i],
-                    split = list[i].attrs.split("/"),
-                    guid = this._contextObj.getReference(split[0]),
-                    renderAsHTML = list[i].renderHTML,
-                    emptyReplacement = list[i].emptyReplacement,
-                    decimalPrecision = list[i].decimalPrecision,
-                    groupDigits = list[i].groupDigits,
-                    oldnumber = numberlist[i],
-                    dataparam = {
-                        i: i,
-                        listObj: listObj,
-                        split: split,
-                        renderAsHTML: renderAsHTML,
-                        emptyReplacement: emptyReplacement,
-                        decimalPrecision: decimalPrecision,
-                        groupDigits: groupDigits,
-                        oldnumber: oldnumber
-                    };
-
+                var dataparam = {
+                    attrObject: obj,
+                    split: obj.attrs.split("/"),
+                    renderAsHTML: obj.renderAsHTML,
+                    emptyReplacement: obj.emptyReplacement,
+                    decimalPrecision: obj.decimalPrecision,
+                    groupDigits: obj.groupDigits
+                };
 
                 if (guid !== "") {
                     mx.data.get({
                         guid: guid,
-                        callback: lang.hitch(this, callbackfunction, dataparam)
+                        callback: lang.hitch(this, this._fetchReferencesCBFunc, dataparam, cb)
                     });
                 } else {
                     //empty reference
                     this.replaceattributes.push({
-                        id: i,
-                        variable: listObj.variablename,
+                        variable: obj.variablename,
                         value: ""
                     });
-                    this._buildString(callback);
+                    cb();
                 }
-            }
+            };
         },
 
-        _fetchAttr: function (obj, attr, renderAsHTML, i, emptyReplacement, decimalPrecision, groupDigits) {
-            logger.debug(this.id + "._fetchAttr");
-            var returnvalue = "",
-                options = {},
-                numberOptions = null;
+        // The fetch referencse is an async action, we use dojo.hitch to create a function that has values of the scope of the for each loop we are in at that moment.
+        _fetchReferences: function(list, callback) {
+            logger.debug(this.id + "._fetchReferences");
 
-             // Referenced object might be empty, can"t fetch an attr on empty
+            this.collect(dojoArray.map(list, this._fetchReferenceCollector), function() {
+                this._buildString(callback);
+            });
+        },
+
+        _fetchAttr: function(obj, attr, opts) {
+            logger.debug(this.id + "._fetchAttr");
+            var returnValue = "",
+                options = {};
+
+            // Referenced object might be empty, can"t fetch an attr on empty
             if (!obj) {
-                return emptyReplacement;
+                return opts.emptyReplacement;
             }
 
-            if (obj.isDate(attr)) {
-                if (this.attributeList[i].datePattern !== "") {
-                    options.datePattern = this.attributeList[i].datePattern;
-                }
-                if (this.attributeList[i].timePattern !== "") {
-                    options.timePattern = this.attributeList[i].timePattern;
-                }
-                returnvalue = this._parseDate(this.attributeList[i].datetimeformat, options, obj.get(attr));
-            } else if (obj.isEnum(attr)) {
-                returnvalue = this._checkString(obj.getEnumCaption(attr, obj.get(attr)), renderAsHTML);
+            console.log(obj, attr, opts);
 
-            } else if (obj.isNumeric(attr) || obj.isCurrency(attr) || obj.getAttributeType(attr) === "AutoNumber") {
-                numberOptions = {};
-                numberOptions.places = decimalPrecision;
-                if (groupDigits) {
+            if (obj.isDate(attr)) {
+                if (opts.attrObject.datePattern !== "") {
+                    options.datePattern = opts.attrObject.datePattern;
+                }
+                if (opts.attrObject.timePattern !== "") {
+                    options.timePattern = opts.attrObject.timePattern;
+                }
+                returnValue = this._parseDate(opts.attrObject.datetimeformat, options, obj.get(attr));
+
+                return returnValue === "" ? opts.emptyReplacement : returnValue;
+            }
+
+            if (obj.isEnum(attr)) {
+                returnValue = this._checkString(obj.getEnumCaption(attr, obj.get(attr)), opts.renderAsHTML);
+                return returnValue === "" ? opts.emptyReplacement : returnValue;
+            }
+
+            if (obj.isNumeric(attr) || obj.isCurrency(attr) || obj.getAttributeType(attr) === "AutoNumber") {
+                var numberOptions = {};
+                numberOptions.places = opts.decimalPrecision;
+                if (opts.groupDigits) {
                     numberOptions.locale = dojo.locale;
                     numberOptions.groups = true;
                 }
 
-                returnvalue = mx.parser.formatValue(obj.get(attr), obj.getAttributeType(attr), numberOptions);
-            } else {
-                if (obj.getAttributeType(attr) === "String") {
-                    returnvalue = this._checkString(mx.parser.formatAttribute(obj, attr), renderAsHTML);
-                }
+                returnValue = mx.parser.formatValue(obj.get(attr), obj.getAttributeType(attr), numberOptions);
+                return returnValue === "" ? opts.emptyReplacement : returnValue;
             }
-            if (returnvalue === "") {
-                return emptyReplacement;
-            } else {
-                return returnvalue;
+
+            if (obj.getAttributeType(attr) === "String") {
+                returnValue = this._checkString(mx.parser.formatAttribute(obj, attr), opts.renderAsHTML);
             }
+
+            return returnValue === "" ? opts.emptyReplacement : returnValue;
         },
 
         // _buildString also does _renderString because of callback from fetchReferences is async.
-        _buildString: function (callback) {
+        _buildString: function(callback) {
             logger.debug(this.id + "._buildString");
             var str = this.displaystr,
-                classStr = this.classstr,
-                settings = null,
-                attr = null;
+                classStr = this.classstr;
 
-            for (attr in this.replaceattributes) {
-                settings = this.replaceattributes[attr];
-                str = str.split("${" + settings.variable + "}").join(settings.value);
-                classStr = classStr.split("${" + settings.variable + "}").join(settings.value);
-            }
+            dojoArray.forEach(this.replaceattributes, lang.hitch(this, function (attr) {
+                str = str.split("${" + attr.variable + "}").join(attr.value);
+                classStr = classStr.split("${" + attr.variable + "}").join(attr.value);
+            }));
             this._renderString(str, classStr, callback);
         },
 
-        _renderString: function (msg, classStr, callback) {
+        _renderString: function(msg, classStr, callback) {
             logger.debug(this.id + "._renderString");
 
             dojo.empty(this.domNode);
@@ -253,7 +252,7 @@ define([
             this._executeCallback(callback, "_renderString");
         },
 
-        _checkString: function (string, renderAsHTML) {
+        _checkString: function(string, renderAsHTML) {
             logger.debug(this.id + "._checkString");
             if (string.indexOf("<script") > -1 || !renderAsHTML) {
                 string = dom.escapeString(string);
@@ -261,7 +260,7 @@ define([
             return string;
         },
 
-        _parseDate: function (format, options, value) {
+        _parseDate: function(format, options, value) {
             logger.debug(this.id + "._parseDate");
             var datevalue = value;
 
@@ -278,7 +277,7 @@ define([
             return datevalue;
         },
 
-        _parseTimeAgo: function (value, data) {
+        _parseTimeAgo: function(value, data) {
             logger.debug(this.id + "._parseTimeAgo");
             var date = new Date(value),
                 now = new Date(),
@@ -324,62 +323,61 @@ define([
             }
         },
 
-        execmf: function () {
+        execmf: function() {
             logger.debug(this.id + ".execmf");
             if (!this._contextObj) {
                 return;
             }
 
             if (this.onclickmf) {
-                mx.data.action({
-                    store: {
-                       caller: this.mxform
-                    },
+                var mfObject = {
                     params: {
                         actionname: this.onclickmf,
                         applyto: "selection",
                         guids: [this._contextObj.getGuid()]
                     },
-                    callback: function () {},
-                    error: function () {}
-                });
+                    error: function(error) {
+                        logger.error(this.id + ": An error ocurred while executing microflow: ", error);
+                    }
+                };
+                if (!mx.version || mx.version && parseInt(mx.version.split(".")[0]) < 7) {
+                    // < Mendix 7
+                    mfObject.store = {
+                        caller: this.mxform
+                    };
+                } else {
+                    mfObject.origin = this.mxform;
+                }
+
+                mx.data.action(mfObject, this);
             }
         },
 
-        _resetSubscriptions: function () {
+        _resetSubscriptions: function() {
             logger.debug(this.id + "._resetSubscriptions");
-            // Release handle on previous object, if any.
-            var i = 0;
-
-            for (i = 0; i < this._handles.length; i++) {
-                if (this._handles[i]) {
-                    this.unsubscribe(this._handles[i]);
-                    this._handles[i] = null;
-                }
-            }
+            this.unsubscribeAll();
 
             if (this._contextObj) {
-                this._handles[0] = this.subscribe({
+                this.subscribe({
                     guid: this._contextObj.getGuid(),
                     callback: this._loadData
                 });
 
-                for (i = 0; i < this.attributeList.length; i++) {
-                    this._handles[i + 1] = this.subscribe({
+                for (var i = 0; i < this.attributeList.length; i++) {
+                    this.subscribe({
                         guid: this._contextObj.getGuid(),
                         attr: this.attributeList[i].attrs,
                         callback: this._loadData
                     });
-
                 }
             }
         },
 
-        _executeCallback: function (cb, from) {
-          logger.debug(this.id + "._executeCallback" + (from ? " from " + from : ""));
-          if (cb && typeof cb === "function") {
-            cb();
-          }
+        _executeCallback: function(cb, from) {
+            logger.debug(this.id + "._executeCallback" + (from ? " from " + from : ""));
+            if (cb && typeof cb === "function") {
+                cb();
+            }
         }
     });
 });
