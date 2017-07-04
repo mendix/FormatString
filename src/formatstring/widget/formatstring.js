@@ -11,15 +11,17 @@ define([
 ], function(declare, _WidgetBase, dom, lang, dojo, dojoArray, domClass, on, languagePack) {
     "use strict";
 
+    // var debug = logger.debug;
+
     return declare("formatstring.widget.formatstring", [_WidgetBase], {
 
         _contextObj: null,
         _timeData: null,
-        _replaceAttributes: null,
-        attributeList: null,
+        _replaceAttr: null,
+        attrList: null,
 
         postCreate: function() {
-            logger.debug(this.id + ".postCreate");
+            // debug(this.id + ".postCreate");
 
             this._timeData = languagePack;
 
@@ -27,11 +29,11 @@ define([
                 this._setupEvents();
             }
 
-            this.attributeList = this.notused;
+            this.attrList = this.notused;
         },
 
         update: function(obj, callback) {
-            logger.debug(this.id + ".update");
+            // debug(this.id + ".update");
             this._contextObj = obj;
             this._resetSubscriptions();
 
@@ -39,7 +41,7 @@ define([
         },
 
         _setupEvents: function() {
-            logger.debug(this.id + "._setupEvents, add onClick:" + this.onclickmf);
+            // debug(this.id + "._setupEvents, add onClick:" + this.onclickmf);
             on(this.domNode, "click", lang.hitch(this, function(e) {
                 this.execmf();
                 if (this.stopClickPropagation) {
@@ -56,24 +58,24 @@ define([
         },
 
         _loadData: function(callback) {
-            logger.debug(this.id + "._loadData");
-            this._replaceAttributes = [];
+            // debug(this.id + "._loadData");
+            this._replaceAttr = [];
 
             if (!this._contextObj) {
-                logger.debug(this.id + "._loadData empty context, hiding");
+                // debug(this.id + "._loadData empty context, hiding");
                 domClass.toggle(this.domNode, "hidden", true);
                 this._executeCallback(callback, "_loadData");
                 return;
             }
             domClass.toggle(this.domNode, "hidden", false);
 
-            this.collect(dojoArray.map(this.attributeList, lang.hitch(this, function (attrObj) {
+            this.collect(dojoArray.map(this.attrList, lang.hitch(this, function (attrObj) {
                 if (this._contextObj.get(attrObj.attrs) !== null) {
                     return function (cb) {
                         var value = this._fetchAttr(this._contextObj, attrObj.attrs, attrObj);
 
                         if (attrObj.variablename !== "") {
-                            this._replaceAttributes.push({
+                            this._replaceAttr.push({
                                 variable: attrObj.variablename,
                                 value: value
                             });
@@ -83,26 +85,26 @@ define([
                         cb();
                     };
                 } else {
-                    return this._fetchReferenceCollector(attrObj);
+                    return this._fetchRef(attrObj);
                 }
             })), function () {
                 this._buildString(callback);
             });
         },
 
-        _fetchReferencesCBFunc: function(data, cb, obj) {
-            logger.debug(this.id + "._fetchReferences get callback");
+        _fetchRefCB: function(data, cb, obj) {
+            // debug(this.id + "._fetchReferences get callback");
 
             var value = this._fetchAttr(obj, data.split[2], data.attrObject);
 
-            this._replaceAttributes.push({
+            this._replaceAttr.push({
                 variable: data.attrObject.variablename,
                 value: value
             });
             cb();
         },
 
-        _fetchReferenceCollector: function(attrObj) {
+        _fetchRef: function(attrObj) {
             return function(cb) {
                 var split = attrObj.attrs.split("/"),
                     guid = this._contextObj.getReference(split[0]);
@@ -115,11 +117,11 @@ define([
                 if (guid !== "") {
                     mx.data.get({
                         guid: guid,
-                        callback: lang.hitch(this, this._fetchReferencesCBFunc, dataparam, cb)
+                        callback: lang.hitch(this, this._fetchRefCB, dataparam, cb)
                     });
                 } else {
                     //empty reference
-                    this._replaceAttributes.push({
+                    this._replaceAttr.push({
                         variable: attrObj.variablename,
                         value: ""
                     });
@@ -129,7 +131,7 @@ define([
         },
 
         _fetchAttr: function(obj, attr, attrObj) {
-            logger.debug(this.id + "._fetchAttr");
+            // debug(this.id + "._fetchAttr");
 
             // Referenced object might be empty, can"t fetch an attr on empty
             if (!obj) {
@@ -173,11 +175,11 @@ define([
 
         // _buildString also does _renderString because of callback from fetchReferences is async.
         _buildString: function(callback) {
-            logger.debug(this.id + "._buildString");
+            // debug(this.id + "._buildString");
             var str = this.displaystr,
                 classStr = this.classstr;
 
-            dojoArray.forEach(this._replaceAttributes, lang.hitch(this, function (attr) {
+            dojoArray.forEach(this._replaceAttr, lang.hitch(this, function (attr) {
                 str = str.split("${" + attr.variable + "}").join(attr.value);
                 classStr = classStr.split("${" + attr.variable + "}").join(attr.value);
             }));
@@ -185,7 +187,7 @@ define([
         },
 
         _renderString: function(msg, classStr, callback) {
-            logger.debug(this.id + "._renderString");
+            // debug(this.id + "._renderString");
 
             dojo.empty(this.domNode);
             var div = dom.create("div", {
@@ -198,7 +200,7 @@ define([
         },
 
         _checkString: function(string, renderAsHTML) {
-            logger.debug(this.id + "._checkString");
+            // debug(this.id + "._checkString");
             if (string.indexOf("<script") > -1 || !renderAsHTML) {
                 string = dom.escapeString(string);
             }
@@ -206,7 +208,7 @@ define([
         },
 
         _parseDate: function(format, options, value) {
-            logger.debug(this.id + "._parseDate");
+            // debug(this.id + "._parseDate");
             var datevalue = value;
 
             if (value === "") {
@@ -223,7 +225,7 @@ define([
         },
 
         _parseTimeAgo: function(value, data) {
-            logger.debug(this.id + "._parseTimeAgo");
+            // debug(this.id + "._parseTimeAgo");
             var date = new Date(value),
                 now = new Date(),
                 appendStr = null,
@@ -288,7 +290,7 @@ define([
         },
 
         execmf: function() {
-            logger.debug(this.id + ".execmf");
+            // debug(this.id + ".execmf");
             if (!this._contextObj) {
                 return;
             }
@@ -318,7 +320,7 @@ define([
         },
 
         _resetSubscriptions: function() {
-            logger.debug(this.id + "._resetSubscriptions");
+            // debug(this.id + "._resetSubscriptions");
             this.unsubscribeAll();
 
             if (this._contextObj) {
@@ -327,7 +329,7 @@ define([
                     callback: this._loadData
                 });
 
-                dojoArray.forEach(lang.hitch(this.attributeList, function (attrObj) {
+                dojoArray.forEach(lang.hitch(this.attrList, function (attrObj) {
                     this.subscribe({
                         guid: this._contextObj.getGuid(),
                         attr: attrObj.attrs,
@@ -338,7 +340,7 @@ define([
         },
 
         _executeCallback: function(cb, from) {
-            logger.debug(this.id + "._executeCallback" + (from ? " from " + from : ""));
+            // debug(this.id + "._executeCallback" + (from ? " from " + from : ""));
             if (cb && typeof cb === "function") {
                 cb();
             }
