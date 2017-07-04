@@ -1,247 +1,193 @@
 define([
     "dojo/_base/declare",
     "mxui/widget/_WidgetBase",
-    "dijit/_TemplatedMixin",
     "mxui/dom",
-    "dojo/dom",
-    "dojo/dom-class",
     "dojo/_base/lang",
-    "dojo/on",
-    "dojo/text",
-    "dojo/json",
     "dojo/_base/kernel",
-    "dojo/_base/xhr",
-    "formatstring/lib/timeLanguagePack",
-    "dojo/text!formatstring/widget/template/formatstring.html"
-], function (declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, domClass, lang, on, text, json, dojo, xhr, languagePack, widgetTemplate) {
+    "dojo/_base/array",
+    "dojo/dom-class",
+    "dojo/on",
+    "formatstring/widget/timeLanguagePack"
+], function(declare, _WidgetBase, dom, lang, dojo, dojoArray, domClass, on, languagePack) {
     "use strict";
 
-    return declare("formatstring.widget.formatstring", [_WidgetBase, _TemplatedMixin], {
-        templateString: widgetTemplate,
+    // var debug = logger.debug;
 
-        _wgtNode: null,
-        _contextGuid: null,
+    return declare("formatstring.widget.formatstring", [_WidgetBase], {
+
         _contextObj: null,
-        _handles: [],
         _timeData: null,
-        attributeList: null,
+        _replaceAttr: null,
+        attrList: null,
 
-        _timeStrings: {},
+        postCreate: function() {
+            // debug(this.id + ".postCreate");
 
-        postCreate: function () {
-            logger.debug(this.id + ".postCreate");
-
-            this._buildTimeStrings();
             this._timeData = languagePack;
-            this._setupEvents();
-            this.attributeList = this.notused;
+
+            if (this.onclickmf) {
+                this._setupEvents();
+            }
+
+            this.attrList = this.notused;
         },
 
-        _buildTimeStrings: function () {
-            this._timeStrings = {
-                "second": this.translateStringsecond,
-                "seconds": this.translateStringseconds,
-                "minute": this.translateStringminute,
-                "minutes": this.translateStringminutes,
-                "hour": this.translateStringhour,
-                "hours": this.translateStringhours,
-                "day": this.translateStringday,
-                "days": this.translateStringdays,
-                "week": this.translateStringweek,
-                "weeks": this.translateStringweeks,
-                "month": this.translateStringmonth,
-                "months": this.translateStringmonths,
-                "year": this.translateStringyear,
-                "years": this.translateStringyears,
-                "timestampFuture": this.translateStringtimestampFuture,
-                "timestampPast": this.translateStringtimestampPast
-            };
-        },
-
-        update: function (obj, callback) {
-            logger.debug(this.id + ".update");
+        update: function(obj, callback) {
+            // debug(this.id + ".update");
             this._contextObj = obj;
             this._resetSubscriptions();
 
             this._loadData(callback);
         },
 
-        _setupEvents: function () {
-            logger.debug(this.id + "._setupEvents, add onClick:" + this.onclickmf);
-            if (this.onclickmf) {
-                on(this.domNode, "click", lang.hitch(this, function(e) {
-                    this.execmf();
-
+        _setupEvents: function() {
+            // debug(this.id + "._setupEvents, add onClick:" + this.onclickmf);
+            on(this.domNode, "click", lang.hitch(this, function(e) {
+                this.execmf();
+                if (this.stopClickPropagation) {
                     e.stopPropagation();
-                }));
-            }
+                }
+            }));
         },
 
-        _loadData: function (callback) {
-            logger.debug(this.id + "._loadData");
-            this.replaceattributes = [];
-            var referenceAttributeList = [],
-                numberlist = [],
-                i = null,
-                value = null;
+        _getLocale: function () {
+            if (this.localeSelection === "automatic") {
+                return dojo.locale;
+            }
+            return this.localeSelection.replace("_", "-");
+        },
+
+        _loadData: function(callback) {
+            // debug(this.id + "._loadData");
+            this._replaceAttr = [];
 
             if (!this._contextObj) {
-                logger.debug(this.id + "._loadData empty context, hiding");
+                // debug(this.id + "._loadData empty context, hiding");
                 domClass.toggle(this.domNode, "hidden", true);
                 this._executeCallback(callback, "_loadData");
                 return;
             }
             domClass.toggle(this.domNode, "hidden", false);
 
-            for (i = 0; i < this.attributeList.length; i++) {
-                if (this._contextObj.get(this.attributeList[i].attrs) !== null) {
-                    value = this._fetchAttr(this._contextObj, this.attributeList[i].attrs, this.attributeList[i].renderHTML, i,
-                        this.attributeList[i].emptyReplacement, this.attributeList[i].decimalPrecision, this.attributeList[i].groupDigits);
-                    if (this.attributeList[i].variablename !== "") {
-                      this.replaceattributes.push({
-                          id: i,
-                          variable: this.attributeList[i].variablename,
-                          value: value
-                      });
-                    } else {
-                      logger.warn(this.id + "._loadData: You have an empty variable name, skipping! Please check Data source -> Attributes -> Variable Name");
-                    }
-                } else {
-                    referenceAttributeList.push(this.attributeList[i]);
-                    numberlist.push(i);
-                }
-            }
+            this.collect(dojoArray.map(this.attrList, lang.hitch(this, function (attrObj) {
+                if (this._contextObj.get(attrObj.attrs) !== null) {
+                    return function (cb) {
+                        var value = this._fetchAttr(this._contextObj, attrObj.attrs, attrObj);
 
-            if (referenceAttributeList.length > 0) {
-                //if we have reference attributes, we need to fetch them
-                this._fetchReferences(referenceAttributeList, numberlist, callback);
-            } else {
+                        if (attrObj.variablename !== "") {
+                            this._replaceAttr.push({
+                                variable: attrObj.variablename,
+                                value: value
+                            });
+                        } else {
+                            logger.warn(this.id + "._loadData: You have an empty variable name, skipping! Please check Data source -> Attributes -> Variable Name");
+                        }
+                        cb();
+                    };
+                } else {
+                    return this._fetchRef(attrObj);
+                }
+            })), function () {
                 this._buildString(callback);
-            }
+            });
         },
 
-        // The fetch referencse is an async action, we use dojo.hitch to create a function that has values of the scope of the for each loop we are in at that moment.
-        _fetchReferences: function (list, numberlist, callback) {
-            logger.debug(this.id + "._fetchReferences");
+        _fetchRefCB: function(data, cb, obj) {
+            // debug(this.id + "._fetchReferences get callback");
 
-            var l = list.length;
+            var value = this._fetchAttr(obj, data.split[2], data.attrObject);
 
-            var callbackfunction = function (data, obj) {
-                logger.debug(this.id + "._fetchReferences get callback");
-                var value = this._fetchAttr(obj, data.split[2], data.renderAsHTML, data.oldnumber, data.emptyReplacement, data.decimalPrecision, data.groupDigits);
-                this.replaceattributes.push({
-                    id: data.i,
-                    variable: data.listObj.variablename,
-                    value: value
-                });
+            this._replaceAttr.push({
+                variable: data.attrObject.variablename,
+                value: value
+            });
+            cb();
+        },
 
-                l--;
-                if (l <= 0) {
-                    this._buildString(callback);
-                } else {
-                    this._buildString();
-                }
-            };
+        _fetchRef: function(attrObj) {
+            return function(cb) {
+                var split = attrObj.attrs.split("/"),
+                    guid = this._contextObj.getReference(split[0]);
 
-            for (var i = 0; i < list.length; i++) {
-                var listObj = list[i],
-                    split = list[i].attrs.split("/"),
-                    guid = this._contextObj.getReference(split[0]),
-                    renderAsHTML = list[i].renderHTML,
-                    emptyReplacement = list[i].emptyReplacement,
-                    decimalPrecision = list[i].decimalPrecision,
-                    groupDigits = list[i].groupDigits,
-                    oldnumber = numberlist[i],
-                    dataparam = {
-                        i: i,
-                        listObj: listObj,
-                        split: split,
-                        renderAsHTML: renderAsHTML,
-                        emptyReplacement: emptyReplacement,
-                        decimalPrecision: decimalPrecision,
-                        groupDigits: groupDigits,
-                        oldnumber: oldnumber
-                    };
-
+                var dataparam = {
+                    attrObject: attrObj,
+                    split: split
+                };
 
                 if (guid !== "") {
                     mx.data.get({
                         guid: guid,
-                        callback: lang.hitch(this, callbackfunction, dataparam)
+                        callback: lang.hitch(this, this._fetchRefCB, dataparam, cb)
                     });
                 } else {
                     //empty reference
-                    this.replaceattributes.push({
-                        id: i,
-                        variable: listObj.variablename,
+                    this._replaceAttr.push({
+                        variable: attrObj.variablename,
                         value: ""
                     });
-                    this._buildString(callback);
+                    cb();
                 }
-            }
+            };
         },
 
-        _fetchAttr: function (obj, attr, renderAsHTML, i, emptyReplacement, decimalPrecision, groupDigits) {
-            logger.debug(this.id + "._fetchAttr");
-            var returnvalue = "",
-                options = {},
-                numberOptions = null;
+        _fetchAttr: function(obj, attr, attrObj) {
+            // debug(this.id + "._fetchAttr");
 
-             // Referenced object might be empty, can"t fetch an attr on empty
+            // Referenced object might be empty, can"t fetch an attr on empty
             if (!obj) {
-                return emptyReplacement;
+                return attrObj.emptyReplacement;
             }
 
             if (obj.isDate(attr)) {
-                if (this.attributeList[i].datePattern !== "") {
-                    options.datePattern = this.attributeList[i].datePattern;
-                }
-                if (this.attributeList[i].timePattern !== "") {
-                    options.timePattern = this.attributeList[i].timePattern;
-                }
-                returnvalue = this._parseDate(this.attributeList[i].datetimeformat, options, obj.get(attr));
-            } else if (obj.isEnum(attr)) {
-                returnvalue = this._checkString(obj.getEnumCaption(attr, obj.get(attr)), renderAsHTML);
+                var options = {
+                    datePattern: attrObj.datePattern !== "" ? attrObj.datePattern : undefined,
+                    timePattern: attrObj.timePattern !== "" ? attrObj.timePattern : undefined
+                };
 
-            } else if (obj.isNumeric(attr) || obj.isCurrency(attr) || obj.getAttributeType(attr) === "AutoNumber") {
-                numberOptions = {};
-                numberOptions.places = decimalPrecision;
-                if (groupDigits) {
-                    numberOptions.locale = dojo.locale;
+                var returnDate = this._parseDate(attrObj.datetimeformat, options, obj.get(attr));
+
+                return returnDate === "" ? attrObj.emptyReplacement : returnDate;
+            }
+
+            if (obj.isEnum(attr)) {
+                var returnEnum = this._checkString(obj.getEnumCaption(attr, obj.get(attr)), attrObj.renderHTML);
+                return returnEnum === "" ? attrObj.emptyReplacement : returnEnum;
+            }
+
+            if (obj.isNumeric(attr) || obj.isCurrency(attr) || obj.getAttributeType(attr) === "AutoNumber") {
+                var numberOptions = {};
+                numberOptions.places = attrObj.decimalPrecision;
+                if (attrObj.groupDigits) {
+                    numberOptions.locale = this._getLocale();
                     numberOptions.groups = true;
                 }
 
-                returnvalue = mx.parser.formatValue(obj.get(attr), obj.getAttributeType(attr), numberOptions);
-            } else {
-                if (obj.getAttributeType(attr) === "String") {
-                    returnvalue = this._checkString(mx.parser.formatAttribute(obj, attr), renderAsHTML);
-                }
+                var returnNumber = mx.parser.formatValue(obj.get(attr), obj.getAttributeType(attr), numberOptions);
+                return returnNumber === "" ? attrObj.emptyReplacement : returnNumber;
             }
-            if (returnvalue === "") {
-                return emptyReplacement;
-            } else {
-                return returnvalue;
+
+            var returnValue = "";
+            if (obj.getAttributeType(attr) === "String") {
+                returnValue = this._checkString(mx.parser.formatAttribute(obj, attr), attrObj.renderHTML);
             }
+            return returnValue === "" ? attrObj.emptyReplacement : returnValue;
         },
 
         // _buildString also does _renderString because of callback from fetchReferences is async.
-        _buildString: function (callback) {
-            logger.debug(this.id + "._buildString");
+        _buildString: function(callback) {
+            // debug(this.id + "._buildString");
             var str = this.displaystr,
-                classStr = this.classstr,
-                settings = null,
-                attr = null;
+                classStr = this.classstr;
 
-            for (attr in this.replaceattributes) {
-                settings = this.replaceattributes[attr];
-                str = str.split("${" + settings.variable + "}").join(settings.value);
-                classStr = classStr.split("${" + settings.variable + "}").join(settings.value);
-            }
+            dojoArray.forEach(this._replaceAttr, lang.hitch(this, function (attr) {
+                str = str.split("${" + attr.variable + "}").join(attr.value);
+                classStr = classStr.split("${" + attr.variable + "}").join(attr.value);
+            }));
             this._renderString(str, classStr, callback);
         },
 
-        _renderString: function (msg, classStr, callback) {
-            logger.debug(this.id + "._renderString");
+        _renderString: function(msg, classStr, callback) {
+            // debug(this.id + "._renderString");
 
             dojo.empty(this.domNode);
             var div = dom.create("div", {
@@ -253,16 +199,16 @@ define([
             this._executeCallback(callback, "_renderString");
         },
 
-        _checkString: function (string, renderAsHTML) {
-            logger.debug(this.id + "._checkString");
+        _checkString: function(string, renderAsHTML) {
+            // debug(this.id + "._checkString");
             if (string.indexOf("<script") > -1 || !renderAsHTML) {
                 string = dom.escapeString(string);
             }
             return string;
         },
 
-        _parseDate: function (format, options, value) {
-            logger.debug(this.id + "._parseDate");
+        _parseDate: function(format, options, value) {
+            // debug(this.id + "._parseDate");
             var datevalue = value;
 
             if (value === "") {
@@ -278,8 +224,8 @@ define([
             return datevalue;
         },
 
-        _parseTimeAgo: function (value, data) {
-            logger.debug(this.id + "._parseTimeAgo");
+        _parseTimeAgo: function(value, data) {
+            // debug(this.id + "._parseTimeAgo");
             var date = new Date(value),
                 now = new Date(),
                 appendStr = null,
@@ -294,92 +240,110 @@ define([
                 time = null;
 
             if (this.useTranslatableStrings) {
-                time = this._timeStrings;
+                time = {
+                    "second": this.translateStringsecond,
+                    "seconds": this.translateStringseconds,
+                    "minute": this.translateStringminute,
+                    "minutes": this.translateStringminutes,
+                    "hour": this.translateStringhour,
+                    "hours": this.translateStringhours,
+                    "day": this.translateStringday,
+                    "days": this.translateStringdays,
+                    "week": this.translateStringweek,
+                    "weeks": this.translateStringweeks,
+                    "month": this.translateStringmonth,
+                    "months": this.translateStringmonths,
+                    "year": this.translateStringyear,
+                    "years": this.translateStringyears,
+                    "timestampFuture": this.translateStringtimestampFuture,
+                    "timestampPast": this.translateStringtimestampPast
+                };
+            } else if (typeof this._timeData[this._getLocale()] !== "undefined") {
+                time = this._timeData[this._getLocale()];
             } else {
-                time = this._timeData[dojo.locale];
+                time = this._timeData["en-us"];
             }
 
             appendStr = (date > now) ? time.timestampFuture : time.timestampPast;
 
-            function createTimeAgoString(nr, unitSingular, unitPlural) {
-                return nr + " " + (nr === 1 ? unitSingular : unitPlural) + " " + appendStr;
+            function createTimeAgoString(nr, unit) {
+                return nr + " " + (nr === 1 ? time[unit] : time[unit + "s"]) + " " + appendStr;
             }
 
             if (seconds < 60) {
-                return createTimeAgoString(seconds, time.second, time.seconds);
+                return createTimeAgoString(seconds, "second");
             } else if (minutes < 60) {
-                return createTimeAgoString(minutes, time.minute, time.minutes);
+                return createTimeAgoString(minutes, "minute");
             } else if (hours < 24) {
-                return createTimeAgoString(hours, time.hour, time.hours);
+                return createTimeAgoString(hours, "hour");
             } else if (days < 7) {
-                return createTimeAgoString(days, time.day, time.days);
+                return createTimeAgoString(days, "day");
             } else if (weeks < 5) {
-                return createTimeAgoString(weeks, time.week, time.weeks);
+                return createTimeAgoString(weeks, "week");
             } else if (months < 12) {
-                return createTimeAgoString(months, time.month, time.months);
+                return createTimeAgoString(months, "month");
             } else if (years < 10) {
-                return createTimeAgoString(years, time.year, time.years);
+                return createTimeAgoString(years, "year");
             } else {
                 return "a long time " + appendStr;
             }
         },
 
-        execmf: function () {
-            logger.debug(this.id + ".execmf");
+        execmf: function() {
+            // debug(this.id + ".execmf");
             if (!this._contextObj) {
                 return;
             }
 
             if (this.onclickmf) {
-                mx.data.action({
-                    store: {
-                       caller: this.mxform
-                    },
+                var mfObject = {
                     params: {
                         actionname: this.onclickmf,
                         applyto: "selection",
                         guids: [this._contextObj.getGuid()]
                     },
-                    callback: function () {},
-                    error: function () {}
-                });
+                    error: function(error) {
+                        logger.error(this.id + ": An error ocurred while executing microflow: ", error);
+                    }
+                };
+                if (!mx.version || mx.version && parseInt(mx.version.split(".")[0]) < 7) {
+                    // < Mendix 7
+                    mfObject.store = {
+                        caller: this.mxform
+                    };
+                } else {
+                    mfObject.origin = this.mxform;
+                }
+
+                mx.data.action(mfObject, this);
             }
         },
 
-        _resetSubscriptions: function () {
-            logger.debug(this.id + "._resetSubscriptions");
-            // Release handle on previous object, if any.
-            var i = 0;
-
-            for (i = 0; i < this._handles.length; i++) {
-                if (this._handles[i]) {
-                    this.unsubscribe(this._handles[i]);
-                    this._handles[i] = null;
-                }
-            }
+        _resetSubscriptions: function() {
+            // debug(this.id + "._resetSubscriptions");
+            this.unsubscribeAll();
 
             if (this._contextObj) {
-                this._handles[0] = this.subscribe({
+                this.subscribe({
                     guid: this._contextObj.getGuid(),
                     callback: this._loadData
                 });
 
-                for (i = 0; i < this.attributeList.length; i++) {
-                    this._handles[i + 1] = this.subscribe({
+                dojoArray.forEach(lang.hitch(this.attrList, function (attrObj) {
+                    this.subscribe({
                         guid: this._contextObj.getGuid(),
-                        attr: this.attributeList[i].attrs,
+                        attr: attrObj.attrs,
                         callback: this._loadData
                     });
-
-                }
+                }));
             }
         },
 
-        _executeCallback: function (cb, from) {
-          logger.debug(this.id + "._executeCallback" + (from ? " from " + from : ""));
-          if (cb && typeof cb === "function") {
-            cb();
-          }
+        _executeCallback: function(cb, from) {
+            // debug(this.id + "._executeCallback" + (from ? " from " + from : ""));
+            if (cb && typeof cb === "function") {
+                cb();
+            }
         }
     });
 });
