@@ -7,7 +7,7 @@ define([
     "dojo/_base/array",
     "dojo/dom-class",
     "dojo/on",
-    "formatstring/lib/timeLanguagePack"
+    "formatstring/widget/timeLanguagePack"
 ], function(declare, _WidgetBase, dom, lang, dojo, dojoArray, domClass, on, languagePack) {
     "use strict";
 
