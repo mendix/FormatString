@@ -21,7 +21,7 @@ define([
         attrList: null,
 
         postCreate: function() {
-            // debug(this.id + ".postCreate");
+            logger.debug(this.id + ".postCreate");
 
             this._timeData = languagePack;
 
@@ -33,7 +33,7 @@ define([
         },
 
         update: function(obj, callback) {
-            // debug(this.id + ".update");
+            logger.debug(this.id + ".update");
             this._contextObj = obj;
             this._resetSubscriptions();
 
@@ -41,7 +41,7 @@ define([
         },
 
         _setupEvents: function() {
-            // debug(this.id + "._setupEvents, add onClick:" + this.onclickmf);
+            logger.debug(this.id + "._setupEvents");
             on(this.domNode, "click", lang.hitch(this, function(e) {
                 this.execmf();
                 if (this.stopClickPropagation) {
@@ -58,7 +58,7 @@ define([
         },
 
         _loadData: function(callback) {
-            // debug(this.id + "._loadData");
+            logger.debug(this.id + "._loadData");
             this._replaceAttr = [];
 
             if (!this._contextObj) {
@@ -93,8 +93,8 @@ define([
         },
 
         _fetchRefCB: function(data, cb, obj) {
-            // debug(this.id + "._fetchReferences get callback");
-
+            logger.debug(this.id + "._fetchRefCB");
+            
             var value = this._fetchAttr(obj, data.split[2], data.attrObject);
 
             this._replaceAttr.push({
@@ -105,6 +105,8 @@ define([
         },
 
         _fetchRef: function(attrObj) {
+            logger.debug(this.id + "._fetchRef");
+            
             return function(cb) {
                 var split = attrObj.attrs.split("/"),
                     guid = this._contextObj.getReference(split[0]);
@@ -131,8 +133,8 @@ define([
         },
 
         _fetchAttr: function(obj, attr, attrObj) {
-            // debug(this.id + "._fetchAttr");
-
+            logger.debug(this.id + "._fetchAttr");
+            
             // Referenced object might be empty, can"t fetch an attr on empty
             if (!obj) {
                 return attrObj.emptyReplacement;
@@ -175,7 +177,8 @@ define([
 
         // _buildString also does _renderString because of callback from fetchReferences is async.
         _buildString: function(callback) {
-            // debug(this.id + "._buildString");
+            logger.debug(this.id + "._buildString");
+
             var str = this.displaystr,
                 classStr = this.classstr;
 
@@ -187,7 +190,7 @@ define([
         },
 
         _renderString: function(msg, classStr, callback) {
-            // debug(this.id + "._renderString");
+            logger.debug(this.id + "._renderString");
 
             dojo.empty(this.domNode);
             var div = dom.create("div", {
@@ -200,7 +203,7 @@ define([
         },
 
         _checkString: function(string, renderAsHTML) {
-            // debug(this.id + "._checkString");
+            logger.debug(this.id + "._checkString");
             if (string.indexOf("<script") > -1 || !renderAsHTML) {
                 string = dom.escapeString(string);
             }
@@ -208,7 +211,7 @@ define([
         },
 
         _parseDate: function(format, options, value) {
-            // debug(this.id + "._parseDate");
+            logger.debug(this.id + "._parseDate");
             var datevalue = value;
 
             if (value === "") {
@@ -225,7 +228,7 @@ define([
         },
 
         _parseTimeAgo: function(value, data) {
-            // debug(this.id + "._parseTimeAgo");
+            logger.debug(this.id + "._parseTimeAgo");
             var date = new Date(value),
                 now = new Date(),
                 appendStr = null,
@@ -290,7 +293,7 @@ define([
         },
 
         execmf: function() {
-            // debug(this.id + ".execmf");
+            logger.debug(this.id + ".execmf");
             if (!this._contextObj) {
                 return;
             }
@@ -320,7 +323,7 @@ define([
         },
 
         _resetSubscriptions: function() {
-            // debug(this.id + "._resetSubscriptions");
+            logger.debug(this.id + "._resetSubscriptions");
             this.unsubscribeAll();
 
             if (this._contextObj) {
@@ -340,7 +343,7 @@ define([
         },
 
         _executeCallback: function(cb, from) {
-            // debug(this.id + "._executeCallback" + (from ? " from " + from : ""));
+            logger.debug(this.id + "._executeCallback" + (from ? " from " + from : ""));
             if (cb && typeof cb === "function") {
                 cb();
             }
