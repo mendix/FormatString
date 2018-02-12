@@ -1,4 +1,4 @@
-# FormatString
+# FormatString [![Support](https://img.shields.io/badge/Mendix%20Support%3A-Platform-green.svg)](https://docs.mendix.com/community/app-store/app-store-content-support)
 
 This widget adds a user-defined string to your page, taking object attributes as input parameters.
 
