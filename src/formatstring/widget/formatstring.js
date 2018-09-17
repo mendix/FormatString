@@ -299,7 +299,7 @@ define([
             }
 
             if (this.onclickmf) {
-                var mfObject = {
+                var args = {
                     params: {
                         actionname: this.onclickmf,
                         applyto: "selection",
@@ -311,14 +311,18 @@ define([
                 };
                 if (!mx.version || mx.version && parseInt(mx.version.split(".")[0]) < 7) {
                     // < Mendix 7
-                    mfObject.store = {
+                    args.store = {
                         caller: this.mxform
                     };
                 } else {
-                    mfObject.origin = this.mxform;
+                    args.origin = this.mxform;
+                }
+                if (this.progressType !== "none") {
+                    args.progress = this.progressType;
+                    args.progressMsg = this.progressMsg;
                 }
 
-                mx.data.action(mfObject, this);
+                mx.ui.action(this.onclickmf, args, this);
             }
         },
 
