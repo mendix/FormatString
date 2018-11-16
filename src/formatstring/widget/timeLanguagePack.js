@@ -53,6 +53,24 @@ define([], function () {
             "years": "jaar",
             "timestampFuture": "vanaf nu",
             "timestampPast": "geleden"
+        },
+        "de-de": {
+            "second": "Sekunde",
+            "seconds": "Sekunden",
+            "minute": "Minute",
+            "minutes": "Minuten",
+            "hour": "Stunde",
+            "hours": "Stunden",
+            "day": "Tag",
+            "days": "Tagen",
+            "week": "Woche",
+            "weeks": "Wochen",
+            "month": "Monat",
+            "months": "Monaten",
+            "year": "Jahr",
+            "years": "Jahren",
+            "timestampFuture": "In",
+            "timestampPast": "Vor"
         }
     };
 });

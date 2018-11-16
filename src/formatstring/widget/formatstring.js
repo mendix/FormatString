@@ -240,7 +240,8 @@ define([
                 weeks = Math.floor(days / 7),
                 months = Math.floor(days / 31),
                 years = Math.floor(months / 12),
-                time = null;
+                time = null,
+				locale = null;
 
             if (this.useTranslatableStrings) {
                 time = {
@@ -262,7 +263,8 @@ define([
                     "timestampPast": this.translateStringtimestampPast
                 };
             } else if (typeof this._timeData[this._getLocale()] !== "undefined") {
-                time = this._timeData[this._getLocale()];
+                locale = this._getLocale();
+				time = this._timeData[locale];
             } else {
                 time = this._timeData["en-us"];
             }
@@ -270,8 +272,12 @@ define([
             appendStr = (date > now) ? time.timestampFuture : time.timestampPast;
 
             function createTimeAgoString(nr, unit) {
-                return nr + " " + (nr === 1 ? time[unit] : time[unit + "s"]) + " " + appendStr;
-            }
+				if (locale == "de-de") {
+					return appendStr + " " + nr + " " + (nr === 1 ? time[unit] : time[unit + "s"]);
+				} else {
+					return nr + " " + (nr === 1 ? time[unit] : time[unit + "s"]) + " " + appendStr;
+				}
+			}
 
             if (seconds < 60) {
                 return createTimeAgoString(seconds, "second");
