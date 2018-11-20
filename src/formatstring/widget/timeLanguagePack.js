@@ -18,7 +18,7 @@ define([], function () {
             "timestampFuture": "from now",
             "timestampPast": "ago"
         },
-		"en-gb": {
+        "en-gb": {
             "second": "second",
             "seconds": "seconds",
             "minute": "minute",
@@ -55,22 +55,22 @@ define([], function () {
             "timestampPast": "geleden"
         },
         "de-de": {
-            "second": "Sekunde",
-            "seconds": "Sekunden",
-            "minute": "Minute",
-            "minutes": "Minuten",
-            "hour": "Stunde",
-            "hours": "Stunden",
-            "day": "Tag",
-            "days": "Tagen",
-            "week": "Woche",
-            "weeks": "Wochen",
-            "month": "Monat",
-            "months": "Monaten",
-            "year": "Jahr",
-            "years": "Jahren",
-            "timestampFuture": "In",
-            "timestampPast": "Vor"
+            "second": "sekunde",
+            "seconds": "sekunden",
+            "minute": "minute",
+            "minutes": "minuten",
+            "hour": "stunde",
+            "hours": "stunden",
+            "day": "tag",
+            "days": "tagen",
+            "week": "woche",
+            "weeks": "wochen",
+            "month": "monat",
+            "months": "monaten",
+            "year": "jahr",
+            "years": "jahren",
+            "timestampFuture": "in",
+            "timestampPast": "vor"
         }
     };
 });
