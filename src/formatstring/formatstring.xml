@@ -123,7 +123,7 @@
                 <translation lang="en_US">second</translation>
                 <translation lang="en_GB">second</translation>
                 <translation lang="nl_NL">seconde</translation>
-				<translation lang="de_DE">Sekunde</translation>
+				<translation lang="de_DE">sekunde</translation>
             </translations>
         </property>
         <property key="translateStringseconds" type="translatableString">
@@ -134,7 +134,7 @@
                 <translation lang="en_US">seconds</translation>
                 <translation lang="en_GB">seconds</translation>
                 <translation lang="nl_NL">seconden</translation>
-				<translation lang="de_DE">Sekunden</translation>
+				<translation lang="de_DE">sekunden</translation>
             </translations>
         </property>
         <property key="translateStringminute" type="translatableString">
@@ -145,7 +145,7 @@
                 <translation lang="en_US">minute</translation>
                 <translation lang="en_GB">minute</translation>
                 <translation lang="nl_NL">minuut</translation>
-				<translation lang="de_DE">Minute</translation>
+				<translation lang="de_DE">minute</translation>
             </translations>
         </property>
         <property key="translateStringminutes" type="translatableString">
@@ -156,7 +156,7 @@
                 <translation lang="en_US">minutes</translation>
                 <translation lang="en_GB">minutes</translation>
                 <translation lang="nl_NL">minuten</translation>
-				<translation lang="de_DE">Minuten</translation>
+				<translation lang="de_DE">minuten</translation>
             </translations>
         </property>
         <property key="translateStringhour" type="translatableString">
@@ -167,7 +167,7 @@
                 <translation lang="en_US">hour</translation>
                 <translation lang="en_GB">hour</translation>
                 <translation lang="nl_NL">uur</translation>
-				<translation lang="de_DE">Stunde</translation>
+				<translation lang="de_DE">stunde</translation>
             </translations>
         </property>
         <property key="translateStringhours" type="translatableString">
@@ -178,7 +178,7 @@
                 <translation lang="en_US">hours</translation>
                 <translation lang="en_GB">hours</translation>
                 <translation lang="nl_NL">uur</translation>
-				<translation lang="de_DE">Stunden</translation>
+				<translation lang="de_DE">stunden</translation>
             </translations>
         </property>
         <property key="translateStringday" type="translatableString">
@@ -189,7 +189,7 @@
                 <translation lang="en_US">day</translation>
                 <translation lang="en_GB">day</translation>
                 <translation lang="nl_NL">dag</translation>
-				<translation lang="de_DE">Tag</translation>
+				<translation lang="de_DE">tag</translation>
             </translations>
         </property>
         <property key="translateStringdays" type="translatableString">
@@ -200,7 +200,7 @@
                 <translation lang="en_US">days</translation>
                 <translation lang="en_GB">days</translation>
                 <translation lang="nl_NL">dagen</translation>
-				<translation lang="de_DE">Tage</translation>
+				<translation lang="de_DE">tage</translation>
             </translations>
         </property>
         <property key="translateStringweek" type="translatableString">
@@ -211,7 +211,7 @@
                 <translation lang="en_US">week</translation>
                 <translation lang="en_GB">week</translation>
                 <translation lang="nl_NL">week</translation>
-				<translation lang="de_DE">Woche</translation>
+				<translation lang="de_DE">woche</translation>
             </translations>
         </property>
         <property key="translateStringweeks" type="translatableString">
@@ -222,7 +222,7 @@
                 <translation lang="en_US">weeks</translation>
                 <translation lang="en_GB">weeks</translation>
                 <translation lang="nl_NL">weken</translation>
-				<translation lang="de_DE">Wochen</translation>
+				<translation lang="de_DE">wochen</translation>
             </translations>
         </property>
         <property key="translateStringmonth" type="translatableString">
@@ -233,7 +233,7 @@
                 <translation lang="en_US">month</translation>
                 <translation lang="en_GB">month</translation>
                 <translation lang="nl_NL">maand</translation>
-				<translation lang="de_DE">Monat</translation>
+				<translation lang="de_DE">monat</translation>
             </translations>
         </property>
         <property key="translateStringmonths" type="translatableString">
@@ -244,7 +244,7 @@
                 <translation lang="en_US">months</translation>
                 <translation lang="en_GB">months</translation>
                 <translation lang="nl_NL">maanden</translation>
-				<translation lang="de_DE">Monate</translation>
+				<translation lang="de_DE">monate</translation>
             </translations>
         </property>
         <property key="translateStringyear" type="translatableString">
@@ -255,7 +255,7 @@
                 <translation lang="en_US">year</translation>
                 <translation lang="en_GB">year</translation>
                 <translation lang="nl_NL">jaar</translation>
-				<translation lang="de_DE">Jahr</translation>
+				<translation lang="de_DE">jahr</translation>
             </translations>
         </property>
         <property key="translateStringyears" type="translatableString">
@@ -266,7 +266,7 @@
                 <translation lang="en_US">years</translation>
                 <translation lang="en_GB">years</translation>
                 <translation lang="nl_NL">jaar</translation>
-				<translation lang="de_DE">Jahre</translation>
+				<translation lang="de_DE">jahre</translation>
             </translations>
         </property>
         <property key="translateStringtimestampFuture" type="translatableString">
@@ -277,7 +277,7 @@
                 <translation lang="en_US">from now</translation>
                 <translation lang="en_GB">from now</translation>
                 <translation lang="nl_NL">vanaf nu</translation>
-				<translation lang="de_DE">In</translation>
+				<translation lang="de_DE">in</translation>
             </translations>
         </property>
         <property key="translateStringtimestampPast" type="translatableString">
@@ -288,7 +288,7 @@
                 <translation lang="en_US">ago</translation>
                 <translation lang="en_GB">ago</translation>
                 <translation lang="nl_NL">geleden</translation>
-				<translation lang="de_DE">Vor</translation>
+				<translation lang="de_DE">vor</translation>
             </translations>
         </property>
     </properties>
