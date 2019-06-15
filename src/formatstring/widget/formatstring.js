@@ -192,8 +192,9 @@ define([
             logger.debug(this.id + "._renderString");
 
             dojo.empty(this.domNode);
+            var clickClass = this.onclickmf || this.onclicknf && this.onclicknf.nanoflow ? "formatstring-clickable " : "";
             var div = dom.create("div", {
-                "class": "formatstring " + classStr
+                "class": "formatstring " + clickClass + classStr
             });
             div.innerHTML = msg;
             this.domNode.appendChild(div);
