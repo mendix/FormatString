@@ -37,12 +37,18 @@ The Data Source is used to add replacements for your **Display string**. The val
 | Decimal precision | Amount of decimals |
 | Group digits | Displays a numeric value with group digits |
 
+### Events
+
+| Property | Description |
+| --- | --- |
+| On click Microflow | Microflow to be invoked on click. |
+| On click Nanoflow | Nanoflow to be invoked on click. |
+| Stop propagation | Stop handling click action, prevent click event to go to other components. This can be useful when you don't want other actions (like selection in a listview) to happen |
+
 ### Behavior
 
 | Property | Description |
 | --- | --- |
-| On click | Microflow to be invoked on click. |
-| Stop propagation | Stop handling click action, prevent click event to go to other components. This can be useful when you don't want other actions (like selection in a listview) to happen |
 | Display string | This string is the heart of the FormatString. It will be used as a template for the content. Use `${your_Variable_Name}` to have the attribute value inserted in this string. Note that this string, except for the replacements, is interpreted as HTML. |
 | Class string | Use `${your_Variable_Name}` to have the attribute value used in the className of the widget. See 'Display string'. If you want to use multiple classes, make sure you separate them with spaces. |
 | Translatable strings | Use translatable strings (instead of internal language pack) |

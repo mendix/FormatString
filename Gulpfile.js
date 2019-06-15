@@ -27,7 +27,7 @@ var pkg = require("./package.json"),
     paths = widgetBuilderHelper.generatePaths(pkg),
     xmlversion = widgetBuilderHelper.xmlversion;
 
-gulp.task("default", function() {
+gulp.task("default", ["build"], function() {
     gulp.watch("./src/**/*", ["compress"]);
     gulp.watch("./src/**/*.js", ["copy:js"]);
 });

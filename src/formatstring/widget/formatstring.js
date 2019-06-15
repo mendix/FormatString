@@ -25,9 +25,7 @@ define([
 
             this._timeData = languagePack;
 
-            if (this.onclickmf) {
-                this._setupEvents();
-            }
+            this._setupEvents();
 
             this.attrList = this.notused;
         },
@@ -42,8 +40,9 @@ define([
 
         _setupEvents: function() {
             logger.debug(this.id + "._setupEvents");
+            if (this.onclickmf || this.onclicknf)
             on(this.domNode, "click", lang.hitch(this, function(e) {
-                this.execmf();
+                this.executeAction();
                 if (this.stopClickPropagation) {
                     e.stopPropagation();
                 }
@@ -292,33 +291,35 @@ define([
             }
         },
 
-        execmf: function() {
-            logger.debug(this.id + ".execmf");
-            if (!this._contextObj) {
-                return;
-            }
+        executeAction: function() {
+            logger.debug(this.id + ".executeAction");
 
             if (this.onclickmf) {
-                var mfObject = {
+                mx.ui.hideProgress(pid);
+                mx.data.action({
                     params: {
-                        actionname: this.onclickmf,
-                        applyto: "selection",
-                        guids: [this._contextObj.getGuid()]
+                        actionname: this.onclickmf
                     },
+                    origin: this.mxform,
+                    context: this.mxcontext,
                     error: function(error) {
+                        mx.ui.hideProgress(pid);
+                        mx.ui.error("An error ocurred while executing microflow: " + error.message);
                         logger.error(this.id + ": An error ocurred while executing microflow: ", error);
                     }
-                };
-                if (!mx.version || mx.version && parseInt(mx.version.split(".")[0]) < 7) {
-                    // < Mendix 7
-                    mfObject.store = {
-                        caller: this.mxform
-                    };
-                } else {
-                    mfObject.origin = this.mxform;
-                }
-
-                mx.data.action(mfObject, this);
+                });
+            }
+            if (this.onclicknf && this.onclicknf.nanoflow) {
+                mx.data.callNanoflow({
+                    nanoflow: this.onclicknf,
+                    origin: this.mxform,
+                    context: this.mxcontext,
+                    error: function(error) {
+                        mx.ui.hideProgress(pid);
+                        mx.ui.error("An error ocurred while executing nanoflow: " + error.message);
+                        logger.error(this.id + ": An error ocurred while executing nanoflow: ", error);
+                    }
+                });
             }
         },
 

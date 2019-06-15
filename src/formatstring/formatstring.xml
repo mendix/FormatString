@@ -76,18 +76,25 @@
                 </property>
             </properties>
         </property>
-        <!-- BEHAVIOR -->
+        <!-- Events -->
         <property key="onclickmf" type="microflow" required="false">
-            <caption>On click</caption>
-            <category>Behavior</category>
+            <caption>On click Microflow</caption>
+            <category>Events</category>
+            <description>Microflow to be invoked on click.</description>
+            <returnType type="Void"/>
+        </property>
+        <property key="onclicknf" type="nanoflow" required="false">
+            <caption>On click Nanoflow</caption>
+            <category>Events</category>
             <description>Microflow to be invoked on click.</description>
             <returnType type="Void"/>
         </property>
         <property key="stopClickPropagation" type="boolean" defaultValue="true">
             <caption>Stop propagation</caption>
-            <category>Behavior</category>
+            <category>Events</category>
             <description>Stop handling click action, prevent click event to go to other components</description>
         </property>
+        <!-- BEHAVIOR -->
         <property key="displaystr" type="translatableString" multiline="true" defaultValue="" required="false">
             <caption>Display string</caption>
             <category>Behavior</category>
