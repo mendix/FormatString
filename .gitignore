@@ -1,4 +1,7 @@
-test/javasource/
+test/javasource/*
+!test/javasource/myfirstmodule
+test/javasource/myfirstmodule/*
+!test/javasource/myfirstmodule/actions
 test/deployment/
 test/.classpath
 test/.project
