@@ -94,6 +94,21 @@
             <category>Events</category>
             <description>Stop handling click action, prevent click event to go to other components</description>
         </property>
+        <property key="progressType" type="enumeration" defaultValue="none">
+            <caption>Show progress bar</caption>
+            <category>Events</category>
+            <description>Show progress bar</description>
+            <enumerationValues>
+                <enumerationValue key="none">None</enumerationValue>
+                <enumerationValue key="nonBlocking">Non-blocking</enumerationValue>
+                <enumerationValue key="modal">Blocking</enumerationValue>
+            </enumerationValues>
+        </property>
+        <property key="progressMessage" type="string" required="false" defaultValue="">
+            <caption>Progress message</caption>
+            <category>Events</category>
+            <description>The message to show in the progress bar</description>
+        </property>
         <!-- BEHAVIOR -->
         <property key="displaystr" type="translatableString" multiline="true" defaultValue="" required="false">
             <caption>Display string</caption>

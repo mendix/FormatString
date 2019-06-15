@@ -293,17 +293,22 @@ define([
 
         executeAction: function() {
             logger.debug(this.id + ".executeAction");
-
+            var pid;
+            if (this.progressType !== "none") {
+                pid = mx.ui.showProgress(this.progressMessage, this.progressType === "modal");
+            }
             if (this.onclickmf) {
-                mx.ui.hideProgress(pid);
                 mx.data.action({
                     params: {
                         actionname: this.onclickmf
                     },
                     origin: this.mxform,
                     context: this.mxcontext,
+                    callback: function() {
+                        pid && mx.ui.hideProgress(pid);
+                    },
                     error: function(error) {
-                        mx.ui.hideProgress(pid);
+                        pid && mx.ui.hideProgress(pid);
                         mx.ui.error("An error ocurred while executing microflow: " + error.message);
                         logger.error(this.id + ": An error ocurred while executing microflow: ", error);
                     }
@@ -314,8 +319,11 @@ define([
                     nanoflow: this.onclicknf,
                     origin: this.mxform,
                     context: this.mxcontext,
+                    callback: function() {
+                        pid && mx.ui.hideProgress(pid);
+                    },
                     error: function(error) {
-                        mx.ui.hideProgress(pid);
+                        pid && mx.ui.hideProgress(pid);
                         mx.ui.error("An error ocurred while executing nanoflow: " + error.message);
                         logger.error(this.id + ": An error ocurred while executing nanoflow: ", error);
                     }
