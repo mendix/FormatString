@@ -18,7 +18,7 @@ define([], function () {
             "timestampFuture": "from now",
             "timestampPast": "ago"
         },
-		"en-gb": {
+        "en-gb": {
             "second": "second",
             "seconds": "seconds",
             "minute": "minute",
@@ -53,6 +53,24 @@ define([], function () {
             "years": "jaar",
             "timestampFuture": "vanaf nu",
             "timestampPast": "geleden"
+        },
+        "de-de": {
+            "second": "sekunde",
+            "seconds": "sekunden",
+            "minute": "minute",
+            "minutes": "minuten",
+            "hour": "stunde",
+            "hours": "stunden",
+            "day": "tag",
+            "days": "tagen",
+            "week": "woche",
+            "weeks": "wochen",
+            "month": "monat",
+            "months": "monaten",
+            "year": "jahr",
+            "years": "jahren",
+            "timestampFuture": "in",
+            "timestampPast": "vor"
         }
     };
 });
