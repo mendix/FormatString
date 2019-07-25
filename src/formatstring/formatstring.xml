@@ -78,9 +78,15 @@
         </property>
         <!-- BEHAVIOR -->
         <property key="onclickmf" type="microflow" required="false">
-            <caption>On click</caption>
+            <caption>On click microflow</caption>
             <category>Behavior</category>
             <description>Microflow to be invoked on click.</description>
+            <returnType type="Void"/>
+        </property>
+        <property key="onclicknf" type="nanoflow" required="false">
+            <caption>On click nanoflow</caption>
+            <category>Behavior</category>
+            <description>Nanoflow to be invoked on click.</description>
             <returnType type="Void"/>
         </property>
         <property key="stopClickPropagation" type="boolean" defaultValue="true">

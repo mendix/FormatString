@@ -19,13 +19,14 @@ define([
         _timeData: null,
         _replaceAttr: null,
         attrList: null,
+        onclicknf: {}, // Nanoflows are not strings, so need to make sure its always an object
 
         postCreate: function() {
             logger.debug(this.id + ".postCreate");
 
             this._timeData = languagePack;
 
-            if (this.onclickmf) {
+            if (this.onclickmf || this.onclicknf.nanoflow) {
                 this._setupEvents();
             }
 
@@ -43,7 +44,7 @@ define([
         _setupEvents: function() {
             logger.debug(this.id + "._setupEvents");
             on(this.domNode, "click", lang.hitch(this, function(e) {
-                this.execmf();
+                this.execOnclick();
                 if (this.stopClickPropagation) {
                     e.stopPropagation();
                 }
@@ -266,8 +267,8 @@ define([
             }
         },
 
-        execmf: function() {
-            logger.debug(this.id + ".execmf");
+        execOnclick: function() {
+            logger.debug(this.id + ".execOnclick");
             if (!this._contextObj) {
                 return;
             }
@@ -293,6 +294,16 @@ define([
                 }
 
                 mx.data.action(mfObject, this);
+            }
+            if (this.onclicknf.nanoflow) {
+                mx.data.callNanoflow({
+                    nanoflow: this.onclicknf,
+                    origin: this.mxform,
+                    context: this.mxcontext,
+                    error: function(error) {
+                        logger.error(this.id + ": An error ocurred while executing nanflow: ", error);
+                    }
+                });
             }
         },
 
