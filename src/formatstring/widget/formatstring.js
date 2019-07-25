@@ -92,43 +92,17 @@ define([
             });
         },
 
-        _fetchRefCB: function(data, cb, obj) {
-            logger.debug(this.id + "._fetchRefCB");
-            
-            var value = this._fetchAttr(obj, data.split[2], data.attrObject);
-
-            this._replaceAttr.push({
-                variable: data.attrObject.variablename,
-                value: value
-            });
-            cb();
-        },
-
         _fetchRef: function(attrObj) {
             logger.debug(this.id + "._fetchRef");
             
             return function(cb) {
-                var split = attrObj.attrs.split("/"),
-                    guid = this._contextObj.getReference(split[0]);
-
-                var dataparam = {
-                    attrObject: attrObj,
-                    split: split
-                };
-
-                if (guid !== "") {
-                    mx.data.get({
-                        guid: guid,
-                        callback: lang.hitch(this, this._fetchRefCB, dataparam, cb)
-                    });
-                } else {
-                    //empty reference
+                this._contextObj.fetch(attrObj.attrs, lang.hitch(this, function (value) {
                     this._replaceAttr.push({
                         variable: attrObj.variablename,
-                        value: ""
+                        value: value
                     });
                     cb();
-                }
+                }));
             };
         },
 
