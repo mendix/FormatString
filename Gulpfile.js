@@ -1,4 +1,4 @@
-// Generated on 2016-12-29 using generator-mendix 2.0.4 :: git+https://github.com/mendix/generator-mendix.git
+// Generated on 2018-12-21 using generator-mendix 2.2.3 :: git+https://github.com/mendix/generator-mendix.git
 /*jshint -W069,-W097*/
 "use strict";
 
@@ -14,8 +14,7 @@ var gulp = require("gulp"),
     del = require("del"),
     newer = require("gulp-newer"),
     gutil = require("gulp-util"),
-    merge = require("merge-stream"),
-    uglify = require("gulp-uglify"),
+    plumber = require("gulp-plumber"),
     gulpif = require("gulp-if"),
     jsonTransform = require("gulp-json-transform"),
     intercept = require("gulp-intercept"),
@@ -27,43 +26,10 @@ var pkg = require("./package.json"),
     paths = widgetBuilderHelper.generatePaths(pkg),
     xmlversion = widgetBuilderHelper.xmlversion;
 
-gulp.task("default", function() {
+gulp.task("default", ['build'], function() {
     gulp.watch("./src/**/*", ["compress"]);
     gulp.watch("./src/**/*.js", ["copy:js"]);
-});
-
-gulp.task("dev", function() {
-    gulp.watch("./src/**/*", ["dev-compress"]);
-});
-
-gulp.task("dev-handle", ["dev-clean"], function () {
-    var jsStream = gulp.src([
-            "src/**/*.js"
-        ])
-        .pipe(uglify())
-        .pipe(gulp.dest("dist/src"))
-        .pipe(jsValidate())
-        .pipe(newer(paths.TEST_WIDGETS_DEPLOYMENT_FOLDER))
-        .pipe(gulp.dest(paths.TEST_WIDGETS_DEPLOYMENT_FOLDER));
-    var otherStream = gulp.src([
-            "src/**/*",
-            "!src/**/*.js"
-        ])
-        .pipe(gulp.dest("dist/src"));
-    return merge(jsStream, otherStream);
-});
-
-gulp.task("dev-compress", ["dev-handle"], function () {
-    gulp.src("dist/src/**/*")
-        .pipe(zip(pkg.name + ".mpk"))
-        .pipe(gulp.dest(paths.TEST_WIDGETS_FOLDER))
-        .pipe(gulp.dest("dist"));
-});
-
-gulp.task("dev-clean", function () {
-    return del([
-        "dist/src"
-    ], { force: true });
+    gulp.watch("./src/**/*.html", ["copy:html"])
 });
 
 gulp.task("clean", function () {
@@ -82,7 +48,22 @@ gulp.task("compress", ["clean"], function () {
 
 gulp.task("copy:js", function () {
     return gulp.src(["./src/**/*.js"])
+        .pipe(plumber(function (error) {
+            var msg = gutil.colors.red("Error");
+            if (error.fileName) {
+                msg += gutil.colors.red(" in ") + gutil.colors.cyan(error.fileName);
+            }
+            msg += " : " + gutil.colors.cyan(error.message);
+            gutil.log(msg);
+            this.emit("end");
+        }))
         .pipe(jsValidate())
+        .pipe(newer(paths.TEST_WIDGETS_DEPLOYMENT_FOLDER))
+        .pipe(gulp.dest(paths.TEST_WIDGETS_DEPLOYMENT_FOLDER));
+});
+
+gulp.task("copy:html", function () {
+    return gulp.src(["./src/**/*.html"])
         .pipe(newer(paths.TEST_WIDGETS_DEPLOYMENT_FOLDER))
         .pipe(gulp.dest(paths.TEST_WIDGETS_DEPLOYMENT_FOLDER));
 });
@@ -120,6 +101,5 @@ gulp.task("modeler", function (cb) {
     widgetBuilderHelper.runmodeler(MODELER_PATH, MODELER_ARGS, paths.TEST_PATH, cb);
 });
 
-gulp.task("build", ["dev-compress"]);
-gulp.task("dev-build", ["compress"]);
+gulp.task("build", ["compress"]);
 gulp.task("version", ["version:xml", "version:json"]);
