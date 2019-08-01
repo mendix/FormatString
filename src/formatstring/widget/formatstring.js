@@ -7,8 +7,9 @@ define([
     "dojo/_base/array",
     "dojo/dom-class",
     "dojo/on",
+    "dojo/date/locale",
     "formatstring/widget/timeLanguagePack"
-], function(declare, _WidgetBase, dom, lang, dojo, dojoArray, domClass, on, languagePack) {
+], function(declare, _WidgetBase, dom, lang, dojo, dojoArray, domClass, on, dojoLocale, languagePack) {
     "use strict";
 
     // var debug = logger.debug;
@@ -197,7 +198,7 @@ define([
                 return this._parseTimeAgo(value);
             } else {
                 options.selector = format;
-                datevalue = dojo.date.locale.format(new Date(value), options);
+                datevalue = dojoLocale.format(new Date(value), options);
             }
             return datevalue;
         },
