@@ -131,7 +131,7 @@ define([
                 return returnEnum === "" ? attrObj.emptyReplacement : returnEnum;
             }
 
-            if (obj.isNumeric(attr) || obj.isCurrency(attr) || obj.getAttributeType(attr) === "AutoNumber") {
+            if (obj.isNumeric(attr) || (obj.isCurrency && obj.isCurrency(attr)) || obj.getAttributeType(attr) === "AutoNumber") {
                 var numberOptions = {};
                 numberOptions.places = attrObj.decimalPrecision;
                 if (attrObj.groupDigits) {
