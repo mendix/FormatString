@@ -318,7 +318,7 @@ define([
                     callback: this._loadData
                 });
 
-                dojoArray.forEach(lang.hitch(this.attrList, function (attrObj) {
+                dojoArray.forEach(this.attrList, lang.hitch(this, function (attrObj) {
                     this.subscribe({
                         guid: this._contextObj.getGuid(),
                         attr: attrObj.attrs,
