@@ -23,7 +23,7 @@ define([
         onclicknf: {}, // Nanoflows are not strings, so need to make sure its always an object
 
         postCreate: function() {
-            logger.debug(this.id + ".postCreate");
+            mx.logger.debug(this.id + ".postCreate");
 
             this._timeData = languagePack;
 
@@ -35,7 +35,7 @@ define([
         },
 
         update: function(obj, callback) {
-            logger.debug(this.id + ".update");
+            mx.logger.debug(this.id + ".update");
             this._contextObj = obj;
             this._resetSubscriptions();
 
@@ -43,7 +43,7 @@ define([
         },
 
         _setupEvents: function() {
-            logger.debug(this.id + "._setupEvents");
+            mx.logger.debug(this.id + "._setupEvents");
             on(this.domNode, "click", lang.hitch(this, function(e) {
                 this.execOnclick();
                 if (this.stopClickPropagation) {
@@ -60,7 +60,7 @@ define([
         },
 
         _loadData: function(callback) {
-            logger.debug(this.id + "._loadData");
+            mx.logger.debug(this.id + "._loadData");
             this._replaceAttr = [];
 
             if (!this._contextObj) {
@@ -95,7 +95,7 @@ define([
         },
 
         _fetchRef: function(attrObj) {
-            logger.debug(this.id + "._fetchRef");
+            mx.logger.debug(this.id + "._fetchRef");
             
             return function(cb) {
                 this._contextObj.fetch(attrObj.attrs, lang.hitch(this, function (value) {
@@ -109,7 +109,7 @@ define([
         },
 
         _fetchAttr: function(obj, attr, attrObj) {
-            logger.debug(this.id + "._fetchAttr");
+            mx.logger.debug(this.id + "._fetchAttr");
             
             // Referenced object might be empty, can"t fetch an attr on empty
             if (!obj) {
@@ -153,7 +153,7 @@ define([
 
         // _buildString also does _renderString because of callback from fetchReferences is async.
         _buildString: function(callback) {
-            logger.debug(this.id + "._buildString");
+            mx.logger.debug(this.id + "._buildString");
 
             var str = this.displaystr,
                 classStr = this.classstr;
@@ -166,7 +166,7 @@ define([
         },
 
         _renderString: function(msg, classStr, callback) {
-            logger.debug(this.id + "._renderString");
+            mx.logger.debug(this.id + "._renderString");
 
             dojo.empty(this.domNode);
             var div = dom.create("div", {
@@ -179,7 +179,7 @@ define([
         },
 
         _checkString: function(string, renderAsHTML) {
-            logger.debug(this.id + "._checkString");
+            mx.logger.debug(this.id + "._checkString");
             if (string.indexOf("<script") > -1 || !renderAsHTML) {
                 string = dom.escapeString(string);
             }
@@ -187,7 +187,7 @@ define([
         },
 
         _parseDate: function(format, options, value) {
-            logger.debug(this.id + "._parseDate");
+            mx.logger.debug(this.id + "._parseDate");
             var datevalue = value;
 
             if (value === "") {
@@ -204,7 +204,7 @@ define([
         },
 
         _parseTimeAgo: function(value, data) {
-            logger.debug(this.id + "._parseTimeAgo");
+            mx.logger.debug(this.id + "._parseTimeAgo");
             var date = new Date(value),
                 now = new Date(),
                 appendStr = null,
@@ -269,7 +269,7 @@ define([
         },
 
         execOnclick: function() {
-            logger.debug(this.id + ".execOnclick");
+            mx.logger.debug(this.id + ".execOnclick");
             if (!this._contextObj) {
                 return;
             }
@@ -309,7 +309,7 @@ define([
         },
 
         _resetSubscriptions: function() {
-            logger.debug(this.id + "._resetSubscriptions");
+            mx.logger.debug(this.id + "._resetSubscriptions");
             this.unsubscribeAll();
 
             if (this._contextObj) {
@@ -329,7 +329,7 @@ define([
         },
 
         _executeCallback: function(cb, from) {
-            logger.debug(this.id + "._executeCallback" + (from ? " from " + from : ""));
+            mx.logger.debug(this.id + "._executeCallback" + (from ? " from " + from : ""));
             if (cb && typeof cb === "function") {
                 cb();
             }
