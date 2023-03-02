@@ -21,7 +21,7 @@ define([
         onclicknf: {}, // Nanoflows are not strings, so need to make sure its always an object
 
         postCreate: function() {
-            mx.logger.debug(this.id + ".postCreate");
+            console.debug(this.id + ".postCreate");
 
             this._timeData = languagePack;
 
@@ -33,7 +33,7 @@ define([
         },
 
         update: function(obj, callback) {
-            mx.logger.debug(this.id + ".update");
+            console.debug(this.id + ".update");
             this._contextObj = obj;
             this._resetSubscriptions();
 
@@ -41,7 +41,7 @@ define([
         },
 
         _setupEvents: function() {
-            mx.logger.debug(this.id + "._setupEvents");
+            console.debug(this.id + "._setupEvents");
             on(this.domNode, "click", lang.hitch(this, function(e) {
                 this.execOnclick();
                 if (this.stopClickPropagation) {
@@ -58,7 +58,7 @@ define([
         },
 
         _loadData: function(callback) {
-            mx.logger.debug(this.id + "._loadData");
+            console.debug(this.id + "._loadData");
             this._replaceAttr = [];
 
             if (!this._contextObj) {
@@ -80,7 +80,7 @@ define([
                                 value: value
                             });
                         } else {
-                            mx.logger.warn(this.id + "._loadData: You have an empty variable name, skipping! Please check Data source -> Attributes -> Variable Name");
+                            mconsole.warn(this.id + "._loadData: You have an empty variable name, skipping! Please check Data source -> Attributes -> Variable Name");
                         }
                         cb();
                     };
@@ -93,7 +93,7 @@ define([
         },
 
         _fetchRef: function(attrObj) {
-            mx.logger.debug(this.id + "._fetchRef");
+            console.debug(this.id + "._fetchRef");
 
             return function(cb) {
                 this._contextObj.fetch(attrObj.attrs, lang.hitch(this, function (value) {
@@ -107,7 +107,7 @@ define([
         },
 
         _fetchAttr: function(obj, attr, attrObj) {
-            mx.logger.debug(this.id + "._fetchAttr");
+            console.debug(this.id + "._fetchAttr");
 
             // Referenced object might be empty, can"t fetch an attr on empty
             if (!obj) {
@@ -151,7 +151,7 @@ define([
 
         // _buildString also does _renderString because of callback from fetchReferences is async.
         _buildString: function(callback) {
-            mx.logger.debug(this.id + "._buildString");
+            console.debug(this.id + "._buildString");
 
             var str = this.displaystr,
                 classStr = this.classstr;
@@ -164,7 +164,7 @@ define([
         },
 
         _renderString: function(msg, classStr, callback) {
-            mx.logger.debug(this.id + "._renderString");
+            console.debug(this.id + "._renderString");
 
             dojo.empty(this.domNode);
             var div = dom.create("div", {
@@ -177,7 +177,7 @@ define([
         },
 
         _checkString: function(string, renderAsHTML) {
-            mx.logger.debug(this.id + "._checkString");
+            console.debug(this.id + "._checkString");
             if (string.indexOf("<script") > -1 || !renderAsHTML) {
                 string = dom.escapeString(string);
             }
@@ -185,7 +185,7 @@ define([
         },
 
         _parseDate: function(format, options, value) {
-            mx.logger.debug(this.id + "._parseDate");
+            console.debug(this.id + "._parseDate");
             var datevalue = value;
 
             if (value === "") {
@@ -202,7 +202,7 @@ define([
         },
 
         _parseTimeAgo: function(value, data) {
-            mx.logger.debug(this.id + "._parseTimeAgo");
+            console.debug(this.id + "._parseTimeAgo");
             var date = new Date(value),
                 now = new Date(),
                 appendStr = null,
@@ -267,7 +267,7 @@ define([
         },
 
         execOnclick: function() {
-            mx.logger.debug(this.id + ".execOnclick");
+            console.debug(this.id + ".execOnclick");
             if (!this._contextObj) {
                 return;
             }
@@ -280,7 +280,7 @@ define([
                         guids: [this._contextObj.getGuid()]
                     },
                     error: function(error) {
-                        mx.logger.error(this.id + ": An error occurred while executing microflow: ", error);
+                        console.error(this.id + ": An error occurred while executing microflow: ", error);
                     }
                 };
                 if (!mx.version || mx.version && parseInt(mx.version.split(".")[0]) < 7) {
@@ -300,14 +300,14 @@ define([
                     origin: this.mxform,
                     context: this.mxcontext,
                     error: function(error) {
-                        mx.logger.error(this.id + ": An error occurred while executing nanoflow: ", error);
+                        console.error(this.id + ": An error occurred while executing nanoflow: ", error);
                     }
                 });
             }
         },
 
         _resetSubscriptions: function() {
-            mx.logger.debug(this.id + "._resetSubscriptions");
+            console.debug(this.id + "._resetSubscriptions");
             this.unsubscribeAll();
 
             if (this._contextObj) {
@@ -327,7 +327,7 @@ define([
         },
 
         _executeCallback: function(cb, from) {
-            mx.logger.debug(this.id + "._executeCallback" + (from ? " from " + from : ""));
+            console.debug(this.id + "._executeCallback" + (from ? " from " + from : ""));
             if (cb && typeof cb === "function") {
                 cb();
             }
