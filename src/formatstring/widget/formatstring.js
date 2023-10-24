@@ -80,7 +80,7 @@ define([
                                 value: value
                             });
                         } else {
-                            mconsole.warn(this.id + "._loadData: You have an empty variable name, skipping! Please check Data source -> Attributes -> Variable Name");
+                            console.warn(this.id + "._loadData: You have an empty variable name, skipping! Please check Data source -> Attributes -> Variable Name");
                         }
                         cb();
                     };
